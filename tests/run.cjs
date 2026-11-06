@@ -73,7 +73,7 @@ test('opening a friend card does not consume quota or change own sign', () => {
   const {app}=makeApp(), p=page('detail',app,{setNavigationBarTitle(){}})
   p.onLoad(query(app.buildOracle('oracle-01','白羊座','2026-11-07'),app,true))
   assert.equal(p.data.card.sign,'白羊座')
-  assert.equal(app.globalData.selectedSign,'双鱼座')
+  assert.equal(app.globalData.selectedSign,null)
   assert.equal(app.getTodayDraw(),null)
   assert.equal(app.getHistory().length,0)
 })
@@ -318,6 +318,67 @@ test('replay waits for the old scene render acknowledgement before restarting an
  env.p.replay();assert.equal(env.p.data.running,false);env.clock.advance(1000);assert.equal(env.p.data.running,false);assert.equal(env.clock.count(),0)
  acknowledge();env.clock.advance(32);assert.equal(env.p.data.running,true)
  env.p.onUnload();env.clock.advance(5000);assert.equal(env.routes.length,0)
+})
+
+test('absent, empty, invalid and cleared zodiac storage remain truly unbound',()=>{
+ for(const stored of [undefined,null,"","未知",{},11]){
+  const env=makeApp({selectedSign:stored}),before=JSON.stringify(env.storage);
+  assert.equal(env.app.getSelectedSign(),null);assert.equal(env.app.getSignData(),null);
+  const card=env.app.getDailyCard();assert.equal(card.sign,"通用");assert.equal(card.contentVersion,"u1");
+  assert.equal(card.color,undefined);assert.equal(card.number,undefined);assert.equal(card.signNote,undefined);
+  assert.equal(JSON.stringify(env.storage),before)
+ }
+ const env=makeApp({selectedSign:"天秤座"});delete env.storage.selectedSign;
+ assert.equal(env.app.getCardIdentity(),"通用");assert.equal(env.app.globalData.selectedSign,null);
+ assert.equal(env.app.getDailyCard("未知"),null)
+})
+test('guest daily, oracle, theme and quiz shares round-trip after restart and binding',()=>{
+ const env=makeApp(),app=env.app, cards=[app.getDailyCard(),app.drawToday(),app.drawTheme("growth","calm"),app.finishQuiz(Array(8).fill(1))];
+ for(const card of cards)for(const encoded of [true,false]){
+  const receiver=makeApp({selectedSign:"白羊座"}).app;
+  assert.equal(JSON.stringify(receiver.resolveCard(query(card,app,encoded))),JSON.stringify(card));
+  assert.equal(receiver.getSelectedSign(),"白羊座")
+ }
+ app.setSelectedSign("金牛座");assert.equal(app.getDailyCard().sign,"金牛座");
+ assert.equal(app.getTodayDraw().id,cards[1].id);
+ assert.equal(makeApp(env.storage).app.drawToday().id,cards[1].id);
+ for(const v of ["v1","legacy"])assert.equal(app.resolveCard({...query(cards[0],app),v}),null);
+ assert.equal(app.resolveCard({...query(app.getDailyCard(),app),v:"u1"}),null)
+})
+test('guest home and profile stay neutral until a valid picker selection is saved',()=>{
+ const env=makeApp({selectedSign:"invalid"}),home=page("home",env.app,env.wx),profile=page("profile",env.app,env.wx);
+ home.onShow();profile.onShow();
+ assert.equal(home.data.signChosen,false);assert.equal(home.data.selectedIndex,0);
+ assert.equal(home.data.card.sign,"通用");assert.equal(profile.data.selectedSign,null);
+ assert.equal(profile.data.latin,"TWELVE SIGNS");assert.ok(!home.onShareAppMessage().title.includes("null"));
+ home.chooseSign({detail:{value:"0"}});assert.equal(env.app.getSelectedSign(),null);
+ home.chooseSign({detail:{value:"1"}});clearTimeout(home.animationTimer);profile.onShow();
+ assert.equal(home.data.signChosen,true);assert.equal(profile.data.selectedSign,"白羊座");
+ assert.equal(makeApp(env.storage).app.getSelectedSign(),"白羊座")
+})
+test('twelve-star guest launch is distinct, bounded and completes within its sequence',()=>{
+ const {makeScene,INTRO_MS}=require("../miniprogram/pages/launch/scene");
+ const neutral=makeScene(null);
+ assert.equal(neutral.general,true);assert.equal(neutral.latin,"TWELVE SIGNS");assert.equal(neutral.points.length,13);
+ assert.equal(neutral.points.filter(p=>p.bright).length,1);
+ for(const p of neutral.points){assert.ok(p.x>0&&p.x<520&&p.y>0&&p.y<520);assert.ok(p.delay+420<INTRO_MS)}
+ for(const l of neutral.lines)assert.ok(l.delay+440<INTRO_MS);
+ assert.notEqual(JSON.stringify(neutral),JSON.stringify(makeScene("双鱼座")));
+ const env=launchFixture({selectedSign:"invalid"});assert.equal(env.p.data.signChosen,false);assert.equal(env.p.data.scene.general,true);
+ env.p.onUnload()
+})
+test('preview switches guest and personal scenes without changing storage or launch state',()=>{
+ const env=launchFixture({selectedSign:"天秤座"},{preview:"1"}),before=JSON.stringify(env.storage);
+ env.p.changePreviewMode({currentTarget:{dataset:{mode:"guest"}}});env.clock.advance(5000);
+ assert.equal(env.p.data.signChosen,false);assert.equal(env.p.data.scene.general,true);
+ env.p.changePreviewMode({currentTarget:{dataset:{mode:"personal"}}});env.clock.advance(5000);
+ assert.equal(env.p.data.sign,"天秤座");assert.equal(env.p.data.scene.general,false);
+ assert.equal(JSON.stringify(env.storage),before);assert.equal(env.app.globalData.launchAnimationSeen,false);assert.equal(env.routes.length,0);
+ env.p.onUnload()
+ const guest={...makeApp(),clock:fakeClock()};let toast;
+ guest.p=page("launch",guest.app,{...guest.wx,showToast:opts=>{toast=opts.title}},guest.clock.api);guest.p.onLoad({preview:"1"});
+ guest.p.changePreviewMode({currentTarget:{dataset:{mode:"personal"}}});
+ assert.ok(toast);assert.equal(guest.p.data.previewMode,"guest");assert.equal(guest.storage.selectedSign,undefined);guest.p.onUnload()
 })
 console.log(passed+' checks passed')
 module.exports={passed}

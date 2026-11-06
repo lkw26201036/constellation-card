@@ -28,6 +28,6 @@ Page({
   },
   onShareAppMessage() {
     const card = this.data.card
-    return card ? { title: card.sign + " · " + card.title, path: getApp().getSharePath(card) } : { title: "给今天一张温柔的卡", path: "/pages/home/home" }
+    return card ? { title: (card.sign === "通用" ? "十二星光" : card.sign) + " · " + card.title, path: getApp().getSharePath(card) } : { title: "给今天一张温柔的卡", path: "/pages/home/home" }
   }
 })

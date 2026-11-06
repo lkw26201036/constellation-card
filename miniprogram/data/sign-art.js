@@ -17,5 +17,10 @@ const arts = entries.map((row,index) => ({ name:row[0], latin:row[1], symbol:row
   points:row[3].map(([x,y],id)=>({x,y,id})), edges:row[4],
   lines:row[4].map(([a,b],id)=>{const p=row[3][a],q=row[3][b];return {id,x:p[0],y:p[1],length:Math.hypot(q[0]-p[0],q[1]-p[1]),angle:Math.atan2(q[1]-p[1],q[0]-p[0])*180/Math.PI}})
 }))
-function getArt(sign) { return arts.find(item=>item.name===sign) || arts[11] }
+// 通用星图仅作品牌装饰，不代表任何一个星座。
+const generalPoints = Array.from({length:12},(_,id)=>{const a=id*Math.PI/6-Math.PI/2;return{id,x:300+190*Math.cos(a),y:92+61*Math.sin(a)}})
+const generalEdges = generalPoints.map((_,id)=>[id,(id+1)%12])
+const generalArt = {name:"十二星光",latin:"TWELVE SIGNS",symbol:"✦",index:-1,points:generalPoints,edges:generalEdges,
+ lines:generalEdges.map(([a,b],id)=>{const p=generalPoints[a],q=generalPoints[b];return{id,x:p.x,y:p.y,length:Math.hypot(q.x-p.x,q.y-p.y),angle:Math.atan2(q.y-p.y,q.x-p.x)*180/Math.PI}})}
+function getArt(sign) { return arts.find(item=>item.name===sign) || generalArt }
 module.exports = { arts, getArt }

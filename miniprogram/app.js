@@ -57,29 +57,41 @@ App({
   ...explore,
   ...research,
   ...preferences,
-  globalData: { selectedSign: "双鱼座", launchAnimationSeen: false, zodiacSigns, oracleCards },
+  globalData: { selectedSign: null, launchAnimationSeen: false, zodiacSigns, oracleCards },
   onLaunch() {
-    const selectedSign = wx.getStorageSync("selectedSign")
-    if (zodiacSigns.some(item => item.name === selectedSign)) this.globalData.selectedSign = selectedSign
+    this.getSelectedSign()
     this.recordVisit()
   },
   onShow() { this.recordVisit(); this.track("app_open") },
   readArray(key) { const value = wx.getStorageSync(key); return Array.isArray(value) ? value : [] },
+  isZodiac(sign) { return zodiacSigns.some(item => item.name === sign) },
+  isCardIdentity(sign) { return sign === "通用" || this.isZodiac(sign) },
+  getSelectedSign() {
+    const stored = wx.getStorageSync("selectedSign")
+    this.globalData.selectedSign = this.isZodiac(stored) ? stored : null
+    return this.globalData.selectedSign
+  },
+  getCardIdentity() { return this.getSelectedSign() || "通用" },
   setSelectedSign(signName) {
     if (!zodiacSigns.some(item => item.name === signName)) return
     wx.setStorageSync("selectedSign", signName)
     this.globalData.selectedSign = signName
   },
-  getSignData(signName = this.globalData.selectedSign) {
-    return zodiacSigns.find(item => item.name === signName) || zodiacSigns[11]
+  getSignData(signName = this.getSelectedSign()) {
+    return zodiacSigns.find(item => item.name === signName) || null
   },
-  getDailyCard(signName = this.globalData.selectedSign, dateKey = getDateInfo().key) {
+  getDailyCard(signName = this.getCardIdentity(), dateKey = getDateInfo().key) {
     const sign = this.getSignData(signName)
-    if (!validDate(dateKey)) return null
-    const offset = zodiacSigns.indexOf(sign)
+    if (!validDate(dateKey) || !this.isCardIdentity(signName)) return null
+    const offset = sign ? zodiacSigns.indexOf(sign) : 0
     const dayIndex = Math.floor(Date.parse(dateKey + "T00:00:00Z") / 86400000)
     const content = dailyContent[((dayIndex + offset) % dailyContent.length + dailyContent.length) % dailyContent.length]
     const parts = dateKey.split("-").map(Number)
+    if (!sign) return {
+      id: "daily-general-" + dateKey, type: "daily", contentVersion: "u1", sign: "通用", date: dateKey,
+      dateLabel: parts[0] + "年" + parts[1] + "月" + parts[2] + "日",
+      title: content[0], keyword: content[1], summary: content[2], tip: content[3]
+    }
     return {
       id: "daily-" + sign.name + "-" + dateKey, type: "daily", contentVersion: "v1",
       sign: sign.name, symbol: sign.symbol, date: dateKey,
@@ -91,7 +103,7 @@ App({
   },
   buildOracle(sourceId, signName, dateKey) {
     const card = oracleCards.find(item => item.id === sourceId)
-    if (!card || !validDate(dateKey) || !zodiacSigns.some(item => item.name === signName)) return null
+    if (!card || !validDate(dateKey) || !this.isCardIdentity(signName)) return null
     return { ...card, sourceId, id: sourceId + "-" + signName + "-" + dateKey,
       type: "oracle", contentVersion: "v1", sign: signName, date: dateKey,
       dateLabel: dateKey.replace(/-/g, "/") }
@@ -103,7 +115,7 @@ App({
   drawToday() {
     const existing = this.getTodayDraw()
     if (existing) return existing
-    const sign = this.globalData.selectedSign
+    const sign = this.getCardIdentity()
     const source = oracleCards[Math.floor(Math.random() * oracleCards.length)]
     const card = this.buildOracle(source.id, sign, getDateInfo().key)
     // 先保存每日结果；后续打开时会修复历史，避免存储中断后重复抽取。
@@ -153,11 +165,13 @@ App({
   resolveCard(query) {
     let sign
     try { sign = decodeURIComponent(query.sign || "") } catch (error) { return null }
-    if (!zodiacSigns.some(item => item.name === sign) || !validDate(query.date)) return null
+    if (!this.isCardIdentity(sign) || !validDate(query.date)) return null
     if (query.type === "theme") return query.v === "t1" ? this.buildTheme(query.source,sign,query.date,query.mood) : null
     if (query.type === "quiz") return query.v === "q1" ? this.buildQuiz(query.source,sign,query.date) : null
+    if (query.type === "daily" && query.v === "u1") return sign === "通用" ? this.getDailyCard(sign, query.date) : null
     if (query.v !== "v1" && query.v !== "legacy") return null
     if (query.type === "daily") {
+      if (!this.isZodiac(sign)) return null
       if (query.v === "v1") return this.getDailyCard(sign, query.date)
       const info = this.getSignData(sign)
       return { ...info.card, id: "daily-" + sign + "-" + query.date, type: "daily", sign, symbol: info.symbol, date: query.date, dateLabel: query.date }

@@ -19,8 +19,8 @@ function paint(canvas,card){
  ctx.fillStyle="#233f39";ctx.fillRect(0,0,box.width,box.height)
  ctx.strokeStyle="rgba(227,204,156,.45)";ctx.lineWidth=1;ctx.strokeRect(24,24,602,box.height-48)
  ctx.textBaseline="top";ctx.fillStyle="#d8c49a";ctx.font="19px sans-serif"
- const label=card.type==="quiz"?"趣味测试 · 我的充电方式":card.type==="theme"?card.themeLabel+" · 自由抽卡":card.type==="daily"?"每日星座卡":"今日主签"
- ctx.fillText(label,52,65);ctx.fillText(card.sign+" / "+card.date,52,103)
+ const label=card.type==="quiz"?"趣味测试 · 我的充电方式":card.type==="theme"?card.themeLabel+" · 自由抽卡":card.type==="daily"?(card.sign==="通用"?"今日灵感卡":"每日星座卡"):"今日主签"
+ ctx.fillText(label,52,65);ctx.fillText((card.sign==="通用"?"十二星光":card.sign)+" / "+card.date,52,103)
  ctx.fillStyle="#fff8eb";ctx.font="500 36px serif";box.title.forEach((line,i)=>ctx.fillText(line,52,box.titleY+i*49))
  ctx.font="24px sans-serif";ctx.fillStyle="#e4c88b";ctx.fillText(card.keyword,52,box.keywordY)
  ctx.font="24px sans-serif";ctx.fillStyle="#eee8db";box.body.forEach((line,i)=>ctx.fillText(line,52,box.bodyY+i*37))

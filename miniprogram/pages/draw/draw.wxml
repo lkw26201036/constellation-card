@@ -1,5 +1,5 @@
 <view class="page-shell draw-page">
-  <view class="eyebrow">星座卡牌 · {{selectedSign}}</view><view class="page-title">给此刻，抽一张卡</view>
+  <view class="eyebrow">星座卡牌 · {{selectedSign === '通用' ? '随心探索' : selectedSign}}</view><view class="page-title">给此刻，抽一张卡</view>
   <view class="mode-switch"><button class="mode {{mode === 'daily' ? 'active' : ''}}" data-mode="daily" bindtap="changeMode">今日主签</button><button class="mode {{mode === 'free' ? 'active' : ''}}" data-mode="free" bindtap="changeMode">自由抽卡 · 可重抽</button></view>
   <view wx:if="{{mode === 'free'}}" class="explore-options">
     <view class="section-label">选一个想聊的话题</view><view class="theme-grid"><button wx:for="{{themes}}" wx:key="id" class="theme {{themeId === item.id ? 'chosen' : ''}}" data-id="{{item.id}}" bindtap="changeTheme"><text class="theme-index">{{item.mark}}</text><view>{{item.name}}</view></button></view>

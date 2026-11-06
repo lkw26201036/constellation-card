@@ -1,10 +1,11 @@
 const {makeScene,INTRO_MS,EXIT_MS}=require("./scene")
 Page({
- data:{preview:false,reduced:false,running:false,leaving:false,finished:false,error:false,sign:"",signChosen:false,scene:{points:[],lines:[],ticks:[]}},
+ data:{preview:false,previewMode:"guest",hasPersonalSign:false,reduced:false,running:false,leaving:false,finished:false,error:false,sign:"",signChosen:false,scene:{points:[],lines:[],ticks:[]}},
  onLoad(query){
   this.timers=[];this.disposed=false;this.entering=false;this.navigated=false;this.ready=false;this.visible=true
-  const app=getApp(),preview=!!(query&&query.preview==="1"),sign=app.globalData.selectedSign
-  this.setData({preview,reduced:app.getPreferences().reducedMotion,sign,signChosen:!!wx.getStorageSync("selectedSign"),scene:makeScene(sign)})
+  const app=getApp(),preview=!!(query&&query.preview==="1"),sign=app.getSelectedSign()
+  this.personalSign=sign
+  this.setData({preview,previewMode:sign?"personal":"guest",hasPersonalSign:!!sign,reduced:app.getPreferences().reducedMotion,sign:sign||"",signChosen:!!sign,scene:makeScene(sign)})
  },
  onReady(){this.ready=true;if(this.visible===false)return;if(!this.data.preview&&getApp().globalData.launchAnimationSeen){this.enter(true);return}this.play()},
  onHide(){this.visible=false;this.clearTimers();this.paused=true;if(!this.navigated){this.entering=false;this.setData({leaving:false})}},
@@ -34,6 +35,16 @@ Page({
  },
  skip(){this.enter(true)},
  replay(){if(this.data.preview)this.play()},
+ changePreviewMode(event){
+  if(!this.data.preview||this.entering||this.disposed)return
+  const mode=event.currentTarget.dataset.mode
+  if(mode!=="guest"&&mode!=="personal")return
+  if(mode==="personal"&&!this.personalSign){wx.showToast({title:"先在「我的」选择星座，即可预览",icon:"none"});return}
+  if(mode===this.data.previewMode)return
+  this.clearTimers()
+  const sign=mode==="personal"?this.personalSign:null
+  this.setData({previewMode:mode,sign:sign||"",signChosen:!!sign,scene:makeScene(sign)},()=>this.play())
+ },
  closePreview(){wx.navigateBack({delta:1,fail:()=>this.enter(true)})},
  swallow(){},
  onShareAppMessage(){return{title:"给今天，一点方向",path:"/pages/home/home"}}
