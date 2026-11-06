@@ -51,10 +51,12 @@ function validDate(value) {
 
 const explore = require("./services/explore")
 const research = require("./services/research")
+const preferences = require("./services/preferences")
 
 App({
   ...explore,
   ...research,
+  ...preferences,
   globalData: { selectedSign: "双鱼座", zodiacSigns, oracleCards },
   onLaunch() {
     const selectedSign = wx.getStorageSync("selectedSign")

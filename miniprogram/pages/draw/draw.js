@@ -2,6 +2,10 @@ Page({
   data:{mode:"daily",selectedSign:"双鱼座",themes:[],moods:[],themeId:"relation",moodId:"calm",phase:"ready",choice:-1,result:{},isRevealed:false,isDrawing:false,isFavorite:false,motion:true},
   onLoad(){this.setData({themes:getApp().getThemes(),moods:getApp().getMoods()})},
   onShow(){
+    const app=getApp(),pending=app.globalData.pendingTheme
+    this.setData({motion:!app.getPreferences().reducedMotion})
+    if(app.globalData.pendingDrawMode==="daily"){app.globalData.pendingDrawMode=null;app.globalData.pendingTheme=null;this.setData({mode:"daily"});this.refreshResult();return}
+    if(app.getThemes().some(item=>item.id===pending)){app.globalData.pendingTheme=null;this.setData({mode:"free",themeId:pending});this.reset();return}
     if(this.data.mode==="daily") this.refreshResult()
     else { const sign=getApp().globalData.selectedSign; if(sign!==this.data.selectedSign) this.reset(); else if(this.data.result.id) this.setData({phase:"revealed",isRevealed:true,isDrawing:false,isFavorite:getApp().isFavorite(this.data.result.id)}) }
   },

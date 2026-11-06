@@ -12,32 +12,40 @@
   ],
   "window": {
     "navigationBarTitleText": "星座卡牌",
-    "navigationBarBackgroundColor": "#F6F1EA",
+    "navigationBarBackgroundColor": "#F4F2EC",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#F6F1EA",
+    "backgroundColor": "#F4F2EC",
     "backgroundTextStyle": "light"
   },
   "tabBar": {
-    "color": "#8D857D",
-    "selectedColor": "#6A5B52",
-    "backgroundColor": "#FFFCF8",
+    "color": "#7B846F",
+    "selectedColor": "#294735",
+    "backgroundColor": "#F9F8F3",
     "borderStyle": "white",
     "list": [
       {
         "pagePath": "pages/home/home",
-        "text": "今日"
+        "text": "今日",
+        "iconPath": "assets/tabbar/today.png",
+        "selectedIconPath": "assets/tabbar/today-active.png"
       },
       {
         "pagePath": "pages/draw/draw",
-        "text": "抽签"
+        "text": "抽卡",
+        "iconPath": "assets/tabbar/draw.png",
+        "selectedIconPath": "assets/tabbar/draw-active.png"
       },
       {
         "pagePath": "pages/collection/collection",
-        "text": "卡册"
+        "text": "卡册",
+        "iconPath": "assets/tabbar/book.png",
+        "selectedIconPath": "assets/tabbar/book-active.png"
       },
       {
         "pagePath": "pages/profile/profile",
-        "text": "我的"
+        "text": "我的",
+        "iconPath": "assets/tabbar/profile.png",
+        "selectedIconPath": "assets/tabbar/profile-active.png"
       }
     ]
   },

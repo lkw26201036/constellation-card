@@ -1,4 +1,1 @@
-.title { font-size: 42rpx; font-weight: 600; }
-.version { margin-top: 14rpx; color: #7e7166; font-size: 23rpx; }
-.section { margin-top: 28rpx; background: #fffaf4; border-radius: 24rpx; padding: 28rpx; font-size: 27rpx; line-height: 1.85; }
-.heading { font-weight: 600; margin-bottom: 12rpx; font-size: 29rpx; }
+.title{font-size:41rpx;font-weight:600;line-height:1.5;letter-spacing:1rpx}.version{margin-top:16rpx;color:#65715e;font-size:22rpx;line-height:1.8}.section{margin-top:28rpx;border-top:1rpx solid #d9e0cd;padding:26rpx 0 0;font-size:26rpx;line-height:2;color:#52644b}.heading{font-weight:600;margin-bottom:14rpx;font-size:28rpx;color:#344e38;letter-spacing:1rpx}

@@ -11,7 +11,7 @@ function makeApp(initial = {}) {
   const storage = structuredClone(initial)
   let clock = new Date(2026, 10, 7, 12).getTime(), app
   class Clock extends Date { constructor(...args) { super(...(args.length ? args : [clock])) } static now() { return clock } }
-  const wx = { getStorageSync: key => structuredClone(storage[key]), setStorageSync: (key,value) => { storage[key] = structuredClone(value) } }
+  const wx = { removeStorageSync: key => { delete storage[key] }, getStorageSync: key => structuredClone(storage[key]), setStorageSync: (key,value) => { storage[key] = structuredClone(value) } }
   const sandbox={ App: obj => {app=obj}, wx, Date:Clock, console }
   const context=vm.createContext(sandbox), cache={}
   function loadModule(id,parent=path.join(project,'miniprogram/app.js')) {
@@ -226,7 +226,40 @@ test('quiz UI can finish all eight questions, restore previous choices and start
  const p=page('quiz',app,{navigateTo(opts){link=opts.url;opts.success();opts.complete()},showToast(){}})
  p.start()
  for(let i=0;i<8;i++){p.choose({currentTarget:{dataset:{index:2}}});if(i===1){p.previous();assert.equal(p.data.selected,2);p.next()}p.next()}
- assert.equal(app.getQuizHistory()[0].sourceId,'explore');assert.ok(link.includes('type=quiz'));assert.equal(p.data.answers.length,0);assert.equal(p.data.started,false)
+ assert.equal(app.getQuizHistory()[0].sourceId,'explore');assert.ok(link.includes('type=quiz'));assert.equal(p.data.answers.length,0);assert.equal(p.data.started,false);assert.equal(app.getQuizDraft(),null)
+})
+test('unfinished quiz resumes on a new page and after an app restart', () => {
+ const env=makeApp(), p=page('quiz',env.app)
+ p.start();p.choose({currentTarget:{dataset:{index:1}}});p.next();p.choose({currentTarget:{dataset:{index:3}}});p.next()
+ const restarted=makeApp(env.storage), resumed=page('quiz',restarted.app)
+ resumed.onShow();assert.equal(resumed.data.draft.answers.length,2)
+ resumed.start();assert.equal(resumed.data.index,2);assert.equal(resumed.data.selected,-1)
+ resumed.previous();assert.equal(resumed.data.selected,3)
+ assert.equal(restarted.app.getQuizHistory().length,0)
+})
+test('draft rejects unknown versions, invalid values and gaps without affecting other data', () => {
+ for(const draft of [{version:'q2',answers:[0],index:0},{version:'q1',answers:[4],index:0},{version:'q1',answers:[0],index:7},{version:'q1',answers:[null],index:0}]) {
+  const {app}=makeApp({quizDraft:draft});assert.equal(app.getQuizDraft(),null);assert.equal(app.getFavorites().length,0)
+ }
+ const env=makeApp();env.app.saveQuizDraft([0,2],1);env.app.clearQuizDraft();assert.equal(env.app.getQuizDraft(),null)
+})
+test('reduce motion persists and skips animation while daily quota remains unchanged', () => {
+ const env=makeApp();const card=env.app.drawToday();env.app.setReducedMotion(true)
+ const restarted=makeApp(env.storage),p=page('draw',restarted.app)
+ p.onLoad();p.onShow();assert.equal(p.data.motion,false)
+ p.changeMode({currentTarget:{dataset:{mode:'free'}}});p.shuffle();assert.equal(p.data.phase,'selecting')
+ assert.equal(restarted.app.getTodayDraw().id,card.id)
+})
+test('home topic shortcut and result shortcut enter the requested draw mode', () => {
+ const env=makeApp();let url
+ const home=page('home',env.app,{...env.wx,switchTab:opts=>{url=opts.url}})
+ home.onShow();home.openTheme({currentTarget:{dataset:{id:'work'}}});assert.equal(url,'/pages/draw/draw')
+ const draw=page('draw',env.app);draw.onLoad();draw.onShow();assert.equal(draw.data.mode,'free');assert.equal(draw.data.themeId,'work');assert.equal(env.app.globalData.pendingTheme,null)
+ env.app.globalData.pendingTheme='relation';env.app.globalData.pendingDrawMode='daily';draw.onShow();assert.equal(draw.data.mode,'daily')
+})
+test('draft storage failure does not prevent the current quiz from continuing', () => {
+ const env=makeApp();env.wx.setStorageSync=(key)=>{if(key==='quizDraft')throw new Error('storage')}
+ const p=page('quiz',env.app);p.start();p.choose({currentTarget:{dataset:{index:0}}});assert.equal(p.data.draftSaved,false);p.next();assert.equal(p.data.index,1)
 })
 console.log(passed+' checks passed')
 module.exports={passed}

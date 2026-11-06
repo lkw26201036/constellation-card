@@ -1,3 +1,1 @@
-{
-  "navigationBarTitleText": "今日星座卡"
-}
+{"navigationBarTitleText":"今日","usingComponents":{"reading-card":"/components/reading-card/reading-card"}}

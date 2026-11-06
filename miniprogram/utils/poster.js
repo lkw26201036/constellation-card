@@ -6,7 +6,7 @@ function wrap(ctx,text,width,font){
  return lines
 }
 function layout(ctx,card){
- const title=wrap(ctx,card.title,546,"600 36px sans-serif")
+ const title=wrap(ctx,card.title,546,"500 36px serif")
  const body=wrap(ctx,card.summary||card.text,546,"24px sans-serif")
  const advice=wrap(ctx,(card.tip||card.advice)+(card.moodNote?"\n"+card.moodNote:"")+(card.signNote?"\n给"+card.sign+"的小提醒："+card.signNote:""),514,"22px sans-serif")
  const titleY=170,keywordY=titleY+title.length*49+15,bodyY=keywordY+55
@@ -16,13 +16,12 @@ function layout(ctx,card){
 function paint(canvas,card){
  const ctx=canvas.getContext("2d"),box=layout(ctx,card),ratio=2
  canvas.width=box.width*ratio;canvas.height=box.height*ratio;ctx.scale(ratio,ratio)
- ctx.fillStyle="#293f44";ctx.fillRect(0,0,box.width,box.height)
- const glow=ctx.createLinearGradient(0,box.artY,650,box.height);glow.addColorStop(0,"#293f44");glow.addColorStop(1,"#3d514e");ctx.fillStyle=glow;ctx.fillRect(0,box.artY,650,box.height-box.artY)
+ ctx.fillStyle="#233f39";ctx.fillRect(0,0,box.width,box.height)
  ctx.strokeStyle="rgba(227,204,156,.45)";ctx.lineWidth=1;ctx.strokeRect(24,24,602,box.height-48)
  ctx.textBaseline="top";ctx.fillStyle="#d8c49a";ctx.font="19px sans-serif"
  const label=card.type==="quiz"?"趣味测试 · 我的充电方式":card.type==="theme"?card.themeLabel+" · 自由抽卡":card.type==="daily"?"每日星座卡":"今日主签"
  ctx.fillText(label,52,65);ctx.fillText(card.sign+" / "+card.date,52,103)
- ctx.fillStyle="#fff8eb";ctx.font="600 36px sans-serif";box.title.forEach((line,i)=>ctx.fillText(line,52,box.titleY+i*49))
+ ctx.fillStyle="#fff8eb";ctx.font="500 36px serif";box.title.forEach((line,i)=>ctx.fillText(line,52,box.titleY+i*49))
  ctx.font="24px sans-serif";ctx.fillStyle="#e4c88b";ctx.fillText(card.keyword,52,box.keywordY)
  ctx.font="24px sans-serif";ctx.fillStyle="#eee8db";box.body.forEach((line,i)=>ctx.fillText(line,52,box.bodyY+i*37))
  ctx.fillStyle="rgba(255,248,235,.06)";ctx.fillRect(42,box.adviceY,566,89+box.advice.length*34)

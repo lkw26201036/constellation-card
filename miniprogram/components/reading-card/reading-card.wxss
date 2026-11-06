@@ -1,0 +1,14 @@
+.reading-card { position:relative; padding:42rpx 36rpx 12rpx; background:#233f39; color:#f5f0e4; border-radius:24rpx; overflow:hidden; border:1rpx solid #304d43; }
+.card-topline { display:flex; justify-content:space-between; align-items:center; gap:16rpx; color:#d0bd95; font-size:21rpx; letter-spacing:2rpx; line-height:1.6; }
+.edition { font-size:19rpx; letter-spacing:1rpx; opacity:.8; }
+.card-title { font-family:"Songti SC","STSong","Noto Serif CJK SC",serif; font-weight:500; font-size:48rpx; line-height:1.48; letter-spacing:2rpx; margin-top:38rpx; }
+.card-keyword { display:flex; align-items:center; gap:16rpx; font-size:24rpx; color:#d9c191; margin-top:22rpx; letter-spacing:4rpx; }
+.keyword-line { width:28rpx; height:1rpx; background:#b9a47d; }
+.card-prose { font-size:27rpx; line-height:1.95; color:#e3e7dc; margin-top:30rpx; }
+.card-traits { display:flex; gap:16rpx; flex-wrap:wrap; margin-top:26rpx; }
+.trait { font-size:21rpx; padding-bottom:6rpx; border-bottom:1rpx solid #7e8f75; color:#d2c8ad; }
+.card-luck { display:flex; gap:48rpx; margin-top:32rpx; padding-top:26rpx; border-top:1rpx solid rgba(216,196,154,.2); font-size:24rpx; }
+.luck-item { display:flex; align-items:center; }
+.luck-label { margin-right:14rpx; font-size:21rpx; color:#a8b7a6; }
+.card-advice { border-top:1rpx solid rgba(216,196,154,.2); padding-top:25rpx; margin-top:30rpx; font-size:26rpx; line-height:1.85; color:#edf0e2; }
+.advice-label { font-size:21rpx; color:#c4b48c; margin-bottom:12rpx; letter-spacing:2rpx; }

@@ -1,35 +1,14 @@
 page {
-  background: #f6f1ea;
-  color: #3f3833;
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --paper:#f4f2ec; --surface:#fcfbf7; --ink:#283c33; --muted:#65715e; --line:#dddcd0; --forest:#233f39; --gold:#b5a179;
+  background:#f4f2ec; color:#283c33; font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif; font-size:28rpx;
 }
-
-button {
-  border: 0;
-  line-height: 1.4;
-}
-
-.page-shell {
-  min-height: 100vh;
-  padding: 36rpx 32rpx 48rpx;
-  box-sizing: border-box;
-}
-
-.muted {
-  color: #9d938b;
-}
-
-.primary-button {
-  background: #6a5b52;
-  color: #fffaf4;
-  border-radius: 999rpx;
-  padding: 22rpx 30rpx;
-}
-
-.ghost-button {
-  background: #fffaf4;
-  color: #6a5b52;
-  border: 1rpx solid #e8dcd0;
-  border-radius: 999rpx;
-  padding: 20rpx 28rpx;
-}
+.page-shell { min-height:100vh; box-sizing:border-box; padding:40rpx 36rpx calc(52rpx + env(safe-area-inset-bottom)); }
+button { border:0; line-height:1.5; box-sizing:border-box; font-weight:500; }
+button::after { border:0; }
+button:active { opacity:.82; }
+.primary-button,.ghost-button { width:100%; margin:0; padding:24rpx 28rpx; min-height:92rpx; display:flex; justify-content:center; align-items:center; border-radius:16rpx; font-size:27rpx; box-sizing:border-box; }
+.primary-button { background:#233f39; color:#faf7ec; }
+.ghost-button { background:#fcfbf7; color:#3e5143; border:1rpx solid #d7d9cb; }
+.muted { color:#65715e; }
+.eyebrow { font-size:21rpx; letter-spacing:3rpx; line-height:1.7; color:#65715e; }
+button[disabled] { opacity:.55; }
