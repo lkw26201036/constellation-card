@@ -30,7 +30,8 @@
       "ignore": [],
       "disablePlugins": [],
       "outputPath": ""
-    }
+    },
+    "ignoreDevUnusedFiles": false
   },
   "condition": {},
   "simulatorPluginLibVersion": {},

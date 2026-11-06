@@ -181,3 +181,5 @@
 }
 
 .daily-footnote { margin-top: 28rpx; text-align: center; font-size: 22rpx; color: #8d857d; }
+
+.quiz-entry{background:#e7dac4;color:#4b4032;text-align:left;padding:30rpx;border-radius:22rpx;font-size:28rpx;line-height:1.8;margin-top:32rpx}.quiz-entry::after{border:0}.quiz-label{font-size:22rpx;color:#7d6c54}

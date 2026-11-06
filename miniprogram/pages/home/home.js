@@ -23,6 +23,7 @@ Page({
       this.animationTimer = setTimeout(() => this.setData({ cardAnimating: false }), 520)
     } catch (error) { wx.showToast({ title: "未能保存星座，请重试", icon: "none" }) }
   },
+  openQuiz() { wx.navigateTo({url:"/pages/quiz/quiz"}) },
   openDraw() { wx.switchTab({ url: "/pages/draw/draw" }) },
   openDetail() { wx.navigateTo({ url: getApp().getCardPath(this.data.card) }) },
   saveCard() {

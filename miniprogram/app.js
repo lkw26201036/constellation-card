@@ -49,7 +49,10 @@ function validDate(value) {
   return Number.isFinite(timestamp) && new Date(timestamp).toISOString().slice(0, 10) === value
 }
 
+const explore = require("./services/explore")
+
 App({
+  ...explore,
   globalData: { selectedSign: "双鱼座", zodiacSigns, oracleCards },
   onLaunch() {
     const selectedSign = wx.getStorageSync("selectedSign")
@@ -139,12 +142,15 @@ App({
   },
   getCardPath(card) {
     const sourceId = card.sourceId || (card.id.match(/^oracle-\d+/) || [""])[0]
+    if (card.type === "theme" || card.type === "quiz") return "/pages/detail/detail?v=" + card.contentVersion + "&type=" + card.type + "&sign=" + encodeURIComponent(card.sign) + "&date=" + card.date + "&source=" + card.sourceId + (card.type === "theme" ? "&mood=" + card.mood : "")
     return "/pages/detail/detail?v=" + (card.contentVersion || "legacy") + "&type=" + card.type + "&sign=" + encodeURIComponent(card.sign) + "&date=" + card.date + (card.type === "oracle" ? "&source=" + sourceId : "")
   },
   resolveCard(query) {
     let sign
     try { sign = decodeURIComponent(query.sign || "") } catch (error) { return null }
     if (!zodiacSigns.some(item => item.name === sign) || !validDate(query.date)) return null
+    if (query.type === "theme") return query.v === "t1" ? this.buildTheme(query.source,sign,query.date,query.mood) : null
+    if (query.type === "quiz") return query.v === "q1" ? this.buildQuiz(query.source,sign,query.date) : null
     if (query.v !== "v1" && query.v !== "legacy") return null
     if (query.type === "daily") {
       if (query.v === "v1") return this.getDailyCard(sign, query.date)

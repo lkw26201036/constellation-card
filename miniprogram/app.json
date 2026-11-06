@@ -5,7 +5,8 @@
     "pages/collection/collection",
     "pages/profile/profile",
     "pages/detail/detail",
-    "pages/about/about"
+    "pages/about/about",
+    "pages/quiz/quiz"
   ],
   "window": {
     "navigationBarTitleText": "星座卡牌",

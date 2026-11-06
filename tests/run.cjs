@@ -12,7 +12,18 @@ function makeApp(initial = {}) {
   let clock = new Date(2026, 10, 7, 12).getTime(), app
   class Clock extends Date { constructor(...args) { super(...(args.length ? args : [clock])) } static now() { return clock } }
   const wx = { getStorageSync: key => structuredClone(storage[key]), setStorageSync: (key,value) => { storage[key] = structuredClone(value) } }
-  vm.runInNewContext(appCode, { App: obj => {app = obj}, wx, Date: Clock, require: () => daily, console })
+  const sandbox={ App: obj => {app=obj}, wx, Date:Clock, console }
+  const context=vm.createContext(sandbox), cache={}
+  function loadModule(id,parent=path.join(project,'miniprogram/app.js')) {
+    const file=path.resolve(path.dirname(parent),id)+'.js'
+    if(cache[file])return cache[file].exports
+    const mod={exports:{}};cache[file]=mod
+    const wrapper=vm.runInContext('(function(module,exports,require){'+fs.readFileSync(file,'utf8')+'\n})',context)
+    wrapper(mod,mod.exports,child=>loadModule(child,file))
+    return mod.exports
+  }
+  sandbox.require=id=>loadModule(id)
+  vm.runInContext(appCode,context)
   app.onLaunch()
   return {app, storage, wx, setDay: (y,m,d) => {clock = new Date(y,m-1,d,12).getTime()} }
 }
@@ -23,7 +34,7 @@ function query(card, app, encoded = false) {
 function page(name, app, wx = {}) {
   let result
   vm.runInNewContext(fs.readFileSync(path.join(project, 'miniprogram/pages', name, name+'.js'), 'utf8'), {
-    Page: obj => {result=obj}, getApp: () => app, wx, console, setTimeout, clearTimeout
+    Page: obj => {result=obj}, getApp: () => app, wx, console, setTimeout, clearTimeout, require: id => require(path.join(project,"miniprogram/pages",name,id))
   })
   result.setData = update => Object.assign(result.data, update)
   return result
@@ -131,6 +142,35 @@ test('valid old dates do not crash the content resolver', () => {
     const card=app.resolveCard({v:'v1',type:'daily',sign:'双鱼座',date})
     assert.ok(card.title);assert.ok(Number(card.number)>=1)
   }
+})
+test('free theme draws never consume or replace the daily main card and avoid consecutive repeats', () => {
+ const {app}=makeApp(), dailyCard=app.drawToday()
+ for(const theme of app.getThemes()) {
+  let previous
+  for(let i=0;i<20;i++) {const card=app.drawTheme(theme.id,'calm');assert.equal(card.type,'theme');assert.equal(card.themeId,theme.id);assert.notEqual(card.sourceId,previous);previous=card.sourceId}
+ }
+ assert.equal(app.getTodayDraw().id,dailyCard.id)
+})
+test('all themes, moods and quiz outcomes share and restore without local storage', () => {
+ const {app}=makeApp()
+ for(const theme of app.getThemes()) for(let i=1;i<=8;i++) for(const mood of app.getMoods()) {
+  const card=app.buildTheme('theme-'+theme.id+'-'+String(i).padStart(2,'0'),'天秤座','2026-11-07',mood.id)
+  assert.equal(JSON.stringify(app.resolveCard(query(card,app,true))),JSON.stringify(card))
+ }
+ for(const id of ['quiet','connect','explore','order']) {const card=app.buildQuiz(id,'狮子座','2026-11-07');assert.equal(JSON.stringify(app.resolveCard(query(card,app))),JSON.stringify(card))}
+ for(const patch of [{v:'bad'},{source:'theme-work-99'},{mood:'bad'}]) assert.equal(app.resolveCard({...query(app.buildTheme('theme-work-01','双鱼座','2026-11-07'),app),...patch}),null)
+})
+test('quiz validates completion, all outcomes, deterministic ties and keeps answers out of shares', () => {
+ const {app}=makeApp(), q=require('../miniprogram/data/quiz')
+ for(let i=0;i<4;i++){const card=app.finishQuiz(Array(8).fill(i));assert.equal(card.sourceId,q.results[i].id);assert.equal(card.answers,undefined);assert.equal(app.getCardPath(card).includes('answers'),false)}
+ for(const invalid of [[],Array(8),Array(8).fill(4),[0,0,0,0,0,0,0,'1']]) assert.equal(q.score(invalid),null)
+ assert.equal(q.score([0,1,2,3,0,1,2,3]).id,'quiet')
+ const card=app.finishQuiz(Array(8).fill(0));assert.ok(app.findLocalCard(card.id))
+})
+test('each sign has distinct nonempty constellation artwork', () => {
+ const {arts}=require('../miniprogram/data/sign-art')
+ assert.equal(arts.length,12);assert.equal(new Set(arts.map(a=>JSON.stringify(a.points))).size,12)
+ for(const art of arts) {assert.ok(art.lines.length>0);for(const p of art.points){assert.ok(p.x>=0&&p.x<=600&&p.y>=0&&p.y<=185)}}
 })
 console.log(passed+' checks passed')
 module.exports={passed}
