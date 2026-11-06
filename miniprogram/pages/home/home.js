@@ -1,34 +1,39 @@
 Page({
   data: {
     selectedSign: "双鱼座",
-    dateLabel: "2026年11月6日",
-    card: {
-      title: "把今天过成柔软的光",
-      keyword: "松弛感",
-      summary: "今天适合放慢一点，在熟悉的节奏里找到自己的答案。",
-      color: "雾蓝色",
-      number: "7"
-    }
+    selectedIndex: 11,
+    signNames: [],
+    dateLabel: "",
+    card: {},
+    isFavorite: false,
+    cardAnimating: false
   },
 
   onLoad() {
-    const app = getApp()
-    const selectedSign = app.globalData.selectedSign
-    this.setData({ selectedSign })
+    this.refreshCard()
   },
 
-  chooseSign() {
-    wx.showActionSheet({
-      itemList: ["白羊座", "金牛座", "双子座", "巨蟹座", "狮子座", "处女座", "天秤座", "天蝎座", "射手座", "摩羯座", "水瓶座", "双鱼座"],
-      success: (result) => {
-        const signs = ["白羊座", "金牛座", "双子座", "巨蟹座", "狮子座", "处女座", "天秤座", "天蝎座", "射手座", "摩羯座", "水瓶座", "双鱼座"]
-        const selectedSign = signs[result.tapIndex]
-        const app = getApp()
-        app.globalData.selectedSign = selectedSign
-        wx.setStorageSync("selectedSign", selectedSign)
-        this.setData({ selectedSign })
-      }
-    })
+  onShow() {
+    this.refreshCard()
+  },
+
+  refreshCard() {
+    const app = getApp()
+    const selectedSign = app.globalData.selectedSign
+    const signNames = app.globalData.zodiacSigns.map((item) => item.name)
+    const selectedIndex = Math.max(0, signNames.indexOf(selectedSign))
+    const card = app.getDailyCard(selectedSign)
+    this.setData({ selectedSign, selectedIndex, signNames, dateLabel: card.dateLabel, card, isFavorite: app.isFavorite(card.id) })
+  },
+
+  chooseSign(event) {
+    const app = getApp()
+    const selectedIndex = Number(event.detail.value)
+    const selectedSign = app.globalData.zodiacSigns[selectedIndex].name
+    app.setSelectedSign(selectedSign)
+    const card = app.getDailyCard(selectedSign)
+    this.setData({ selectedSign, selectedIndex, dateLabel: card.dateLabel, card, isFavorite: app.isFavorite(card.id), cardAnimating: true })
+    setTimeout(() => this.setData({ cardAnimating: false }), 520)
   },
 
   openDraw() {
@@ -36,11 +41,16 @@ Page({
   },
 
   saveCard() {
-    wx.showToast({ title: "已收藏", icon: "success" })
+    const app = getApp()
+    const isFavorite = app.toggleFavorite(this.data.card)
+    this.setData({ isFavorite })
+    wx.showToast({ title: isFavorite ? "已收藏" : "已取消收藏", icon: "success" })
   },
 
-  shareCard() {
-    wx.showToast({ title: "分享功能准备中", icon: "none" })
+  onShareAppMessage() {
+    return {
+      title: `${this.data.selectedSign}的今日星象卡｜${this.data.card.title}`,
+      path: `/pages/home/home?sign=${encodeURIComponent(this.data.selectedSign)}`
+    }
   }
 })
-

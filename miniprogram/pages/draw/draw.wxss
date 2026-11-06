@@ -29,7 +29,22 @@
   text-align: center;
   box-shadow: 0 24rpx 50rpx rgba(72, 80, 88, 0.2);
   transition: all 280ms ease;
+  position: relative;
+  overflow: hidden;
 }
+
+.oracle-card::before,
+.oracle-card::after {
+  content: "";
+  position: absolute;
+  width: 360rpx;
+  height: 360rpx;
+  border: 1rpx solid rgba(255, 250, 244, 0.18);
+  border-radius: 50%;
+}
+
+.oracle-card::before { transform: rotate(28deg) scaleX(1.4); }
+.oracle-card::after { transform: rotate(-28deg) scaleX(1.4); }
 
 .oracle-card.revealed {
   align-items: flex-start;
@@ -37,20 +52,43 @@
   background: linear-gradient(150deg, #c9a995 0%, #aa8278 100%);
 }
 
-.card-back-symbol {
+.oracle-card.is-drawing {
+  animation: draw-pulse 560ms ease-in-out;
+}
+
+.card-back-symbol,
+.draw-orbit {
   font-size: 108rpx;
   margin-bottom: 36rpx;
+  animation: symbol-float 2.2s ease-in-out infinite;
+}
+
+.draw-orbit {
+  animation: orbit-spin 900ms linear infinite;
 }
 
 .card-back-title {
   font-size: 42rpx;
   font-weight: 600;
+  position: relative;
+  z-index: 1;
 }
 
 .card-back-caption {
   margin-top: 18rpx;
   opacity: 0.72;
   font-size: 24rpx;
+  position: relative;
+  z-index: 1;
+}
+
+.result-label,
+.result-title,
+.result-keyword,
+.result-text,
+.result-advice {
+  position: relative;
+  z-index: 1;
 }
 
 .result-label {
@@ -100,4 +138,21 @@
   color: #9d938b;
   font-size: 25rpx;
   margin-top: 30rpx;
+}
+
+@keyframes draw-pulse {
+  0% { transform: scale(1); }
+  45% { transform: scale(0.96) rotate(-1deg); }
+  75% { transform: scale(1.02) rotate(1deg); }
+  100% { transform: scale(1); }
+}
+
+@keyframes symbol-float {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-12rpx) rotate(8deg); }
+}
+
+@keyframes orbit-spin {
+  from { transform: rotate(0) scale(1); }
+  to { transform: rotate(360deg) scale(1.08); }
 }

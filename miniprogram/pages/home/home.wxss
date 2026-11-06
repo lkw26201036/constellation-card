@@ -20,11 +20,15 @@
 }
 
 .sign-picker {
+  max-width: 210rpx;
   padding: 14rpx 20rpx;
   background: #fffaf4;
   color: #6a5b52;
   border-radius: 999rpx;
   font-size: 24rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .card {
@@ -40,6 +44,21 @@
   color: #3d4852;
   position: relative;
   overflow: hidden;
+  transform-origin: center bottom;
+}
+
+.hero-card.card-enter {
+  animation: card-enter 520ms cubic-bezier(0.2,0.8,0.2,1);
+}
+
+.card-glow {
+  position: absolute;
+  width: 260rpx;
+  height: 260rpx;
+  right: -80rpx;
+  top: -110rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
 }
 
 .hero-card::after {
@@ -49,28 +68,37 @@
   top: 36rpx;
   color: rgba(255, 255, 255, 0.8);
   font-size: 56rpx;
+  animation: twinkle 3s ease-in-out infinite;
 }
 
 .card-meta {
+  position: relative;
+  z-index: 1;
   font-size: 24rpx;
   letter-spacing: 2rpx;
   opacity: 0.72;
 }
 
 .card-title {
+  position: relative;
+  z-index: 1;
   font-size: 54rpx;
   line-height: 1.25;
   font-weight: 600;
-  margin-top: 130rpx;
+  margin-top: 112rpx;
   max-width: 520rpx;
 }
 
 .card-keyword {
+  position: relative;
+  z-index: 1;
   margin-top: 22rpx;
   font-size: 27rpx;
 }
 
 .card-summary {
+  position: relative;
+  z-index: 1;
   margin-top: 26rpx;
   line-height: 1.8;
   font-size: 27rpx;
@@ -101,6 +129,11 @@
   grid-column: span 2;
 }
 
+.button-arrow {
+  margin-left: 10rpx;
+  font-size: 30rpx;
+}
+
 .section-head {
   display: flex;
   justify-content: space-between;
@@ -128,4 +161,21 @@
 .tip-mark {
   color: #b49375;
   font-size: 34rpx;
+  animation: float-mark 2.8s ease-in-out infinite;
+}
+
+@keyframes card-enter {
+  0% { opacity: 0.35; transform: translateY(18rpx) scale(0.97) rotate(-1deg); }
+  65% { opacity: 1; transform: translateY(-6rpx) scale(1.01) rotate(0.4deg); }
+  100% { transform: translateY(0) scale(1) rotate(0); }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.6; transform: scale(0.9) rotate(0); }
+  50% { opacity: 1; transform: scale(1.08) rotate(12deg); }
+}
+
+@keyframes float-mark {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6rpx); }
 }

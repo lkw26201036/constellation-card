@@ -2,34 +2,57 @@ Page({
   data: {
     selectedSign: "双鱼座",
     isRevealed: false,
-    result: {
-      title: "月光里的回声",
-      keyword: "倾听",
-      text: "今天适合听听内心真实的声音，给重要的关系留一点温柔的空间。",
-      advice: "先照顾好自己的感受，再回应外界的期待。"
-    }
+    isDrawing: false,
+    result: {},
+    isFavorite: false
   },
 
   onLoad() {
+    this.refreshSign()
+  },
+
+  onShow() {
+    this.refreshSign()
+  },
+
+  refreshSign() {
     const app = getApp()
     this.setData({ selectedSign: app.globalData.selectedSign })
   },
 
   reveal() {
-    this.setData({ isRevealed: true })
-    wx.vibrateShort({ type: "light" })
+    if (this.data.isRevealed || this.data.isDrawing) return
+    this.setData({ isDrawing: true })
+    setTimeout(() => {
+      const app = getApp()
+      const result = app.getRandomOracle(this.data.selectedSign)
+      app.addHistory(result)
+      this.setData({
+        isDrawing: false,
+        isRevealed: true,
+        result,
+        isFavorite: app.isFavorite(result.id)
+      })
+      wx.vibrateShort({ type: "light" })
+    }, 560)
   },
 
   reset() {
-    this.setData({ isRevealed: false })
+    this.setData({ isRevealed: false, isDrawing: false, result: {}, isFavorite: false })
   },
 
   saveResult() {
-    wx.showToast({ title: "已收藏", icon: "success" })
+    const app = getApp()
+    const isFavorite = app.toggleFavorite(this.data.result)
+    this.setData({ isFavorite })
+    wx.showToast({ title: isFavorite ? "已收藏" : "已取消收藏", icon: "success" })
   },
 
-  shareResult() {
-    wx.showToast({ title: "分享功能准备中", icon: "none" })
+  onShareAppMessage() {
+    const title = this.data.result.title ? `${this.data.selectedSign}抽到「${this.data.result.title}」` : "来抽一张今天的神谕卡"
+    return {
+      title,
+      path: `/pages/draw/draw?sign=${encodeURIComponent(this.data.selectedSign)}`
+    }
   }
 })
-

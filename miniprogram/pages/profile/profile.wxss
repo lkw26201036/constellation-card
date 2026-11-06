@@ -25,6 +25,7 @@
   background: #d7c3ad;
   color: #fffaf4;
   font-size: 48rpx;
+  animation: orb-pulse 3s ease-in-out infinite;
 }
 
 .streak-card {
@@ -49,6 +50,26 @@
   margin-bottom: 10rpx;
 }
 
+.profile-stats {
+  display: flex;
+  gap: 18rpx;
+  margin-top: 18rpx;
+}
+
+.profile-stats > view {
+  flex: 1;
+  padding: 24rpx;
+  background: rgba(255, 250, 244, 0.72);
+  border-radius: 22rpx;
+}
+
+.profile-stat-number {
+  color: #aa8278;
+  font-size: 38rpx;
+  font-weight: 600;
+  margin-bottom: 6rpx;
+}
+
 .settings-list {
   margin-top: 42rpx;
   background: #fffaf4;
@@ -66,4 +87,9 @@
 
 .setting-row:last-child {
   border-bottom: 0;
+}
+
+@keyframes orb-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(180, 147, 117, 0); }
+  50% { transform: scale(1.04); box-shadow: 0 14rpx 30rpx rgba(180, 147, 117, 0.16); }
 }

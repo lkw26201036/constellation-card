@@ -3,15 +3,35 @@
   <view class="title">收藏的温柔时刻</view>
   <view class="muted intro">把喜欢的卡片留在这里，偶尔回来看看。</view>
 
+  <view class="stats-row">
+    <view class="stat-pill"><text class="stat-number">{{cards.length}}</text> 张收藏</view>
+    <view class="stat-pill"><text class="stat-number">{{history.length}}</text> 次抽签</view>
+  </view>
+
   <view wx:if="{{cards.length}}" class="collection-list">
-    <view wx:for="{{cards}}" wx:key="title" class="collection-card">
-      <view class="collection-symbol">✦</view>
+    <view wx:for="{{cards}}" wx:key="id" class="collection-card">
+      <view class="collection-symbol">{{item.symbol || '✦'}}</view>
       <view class="collection-content">
         <view class="collection-title">{{item.title}}</view>
-        <view class="collection-meta">{{item.keyword}} · {{item.date}}</view>
+        <view class="collection-meta">{{item.sign}} · {{item.keyword}} · {{item.dateLabel || item.date}}</view>
       </view>
-      <view class="collection-arrow">›</view>
+      <view class="collection-remove" data-id="{{item.id}}" catchtap="removeCard">×</view>
     </view>
   </view>
-  <view wx:else class="empty-state">还没有收藏卡片</view>
+  <view wx:else class="empty-state">
+    <view class="empty-symbol">✦</view>
+    <view>还没有收藏卡片</view>
+    <view class="empty-caption">在今日卡片或抽签结果里，留下一个喜欢的瞬间吧。</view>
+  </view>
+
+  <view wx:if="{{history.length}}" class="history-section">
+    <view class="section-title">最近抽签</view>
+    <view wx:for="{{history}}" wx:key="id" class="history-row">
+      <view>
+        <view class="history-title">{{item.title}}</view>
+        <view class="collection-meta">{{item.sign}} · {{item.keyword}}</view>
+      </view>
+      <view class="history-date">{{item.dateLabel}}</view>
+    </view>
+  </view>
 </view>
