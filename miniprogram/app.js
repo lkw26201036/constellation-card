@@ -42,83 +42,115 @@ function getDateInfo(date = new Date()) {
   }
 }
 
-App({
-  globalData: {
-    selectedSign: "双鱼座",
-    zodiacSigns,
-    oracleCards
-  },
+const dailyContent = require("./data/daily")
+function validDate(value) {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false
+  const timestamp = Date.parse(value + "T00:00:00Z")
+  return Number.isFinite(timestamp) && new Date(timestamp).toISOString().slice(0, 10) === value
+}
 
+App({
+  globalData: { selectedSign: "双鱼座", zodiacSigns, oracleCards },
   onLaunch() {
     const selectedSign = wx.getStorageSync("selectedSign")
-    if (selectedSign && zodiacSigns.some((item) => item.name === selectedSign)) {
-      this.globalData.selectedSign = selectedSign
-    }
+    if (zodiacSigns.some(item => item.name === selectedSign)) this.globalData.selectedSign = selectedSign
+    this.recordVisit()
   },
-
+  onShow() { this.recordVisit() },
+  readArray(key) { const value = wx.getStorageSync(key); return Array.isArray(value) ? value : [] },
   setSelectedSign(signName) {
-    this.globalData.selectedSign = signName
+    if (!zodiacSigns.some(item => item.name === signName)) return
     wx.setStorageSync("selectedSign", signName)
+    this.globalData.selectedSign = signName
   },
-
   getSignData(signName = this.globalData.selectedSign) {
-    return zodiacSigns.find((item) => item.name === signName) || zodiacSigns[zodiacSigns.length - 1]
+    return zodiacSigns.find(item => item.name === signName) || zodiacSigns[11]
   },
-
-  getDailyCard(signName = this.globalData.selectedSign) {
+  getDailyCard(signName = this.globalData.selectedSign, dateKey = getDateInfo().key) {
     const sign = this.getSignData(signName)
-    const date = getDateInfo()
+    if (!validDate(dateKey)) return null
+    const offset = zodiacSigns.indexOf(sign)
+    const dayIndex = Math.floor(Date.parse(dateKey + "T00:00:00Z") / 86400000)
+    const content = dailyContent[((dayIndex + offset) % dailyContent.length + dailyContent.length) % dailyContent.length]
+    const parts = dateKey.split("-").map(Number)
     return {
-      id: `daily-${sign.name}-${date.key}`,
-      type: "daily",
-      sign: sign.name,
-      symbol: sign.symbol,
-      date: date.key,
-      dateLabel: date.label,
-      dateRange: sign.dateRange,
-      ...sign.card
+      id: "daily-" + sign.name + "-" + dateKey, type: "daily", contentVersion: "v1",
+      sign: sign.name, symbol: sign.symbol, date: dateKey,
+      dateLabel: parts[0] + "年" + parts[1] + "月" + parts[2] + "日", dateRange: sign.dateRange,
+      title: content[0], keyword: content[1], summary: content[2], tip: content[3],
+      signNote: sign.card.tip, color: sign.card.color,
+      number: String(((dayIndex + offset * 3) % 12 + 12) % 12 + 1)
     }
   },
-
-  getRandomOracle(signName = this.globalData.selectedSign) {
-    const card = oracleCards[Math.floor(Math.random() * oracleCards.length)]
-    const date = getDateInfo()
-    return {
-      ...card,
-      id: `${card.id}-${signName}-${Date.now()}`,
-      type: "oracle",
-      sign: signName,
-      date: date.key,
-      dateLabel: date.label
-    }
+  buildOracle(sourceId, signName, dateKey) {
+    const card = oracleCards.find(item => item.id === sourceId)
+    if (!card || !validDate(dateKey) || !zodiacSigns.some(item => item.name === signName)) return null
+    return { ...card, sourceId, id: sourceId + "-" + signName + "-" + dateKey,
+      type: "oracle", contentVersion: "v1", sign: signName, date: dateKey,
+      dateLabel: dateKey.replace(/-/g, "/") }
   },
-
-  getFavorites() {
-    return wx.getStorageSync("favoriteCards") || []
+  getTodayDraw() {
+    const record = wx.getStorageSync("dailyDraw")
+    return record && record.date === getDateInfo().key && record.card && this.buildOracle(record.card.sourceId, record.card.sign, record.date) ? record.card : null
   },
-
-  isFavorite(cardId) {
-    return this.getFavorites().some((item) => item.id === cardId)
+  drawToday() {
+    const existing = this.getTodayDraw()
+    if (existing) return existing
+    const sign = this.globalData.selectedSign
+    const source = oracleCards[Math.floor(Math.random() * oracleCards.length)]
+    const card = this.buildOracle(source.id, sign, getDateInfo().key)
+    // 先保存每日结果；后续打开时会修复历史，避免存储中断后重复抽取。
+    wx.setStorageSync("dailyDraw", { date: card.date, card })
+    this.addHistory(card)
+    return card
   },
-
+  getFavorites() { return this.readArray("favoriteCards") },
+  isFavorite(cardId) { return this.getFavorites().some(item => item.id === cardId) },
   toggleFavorite(card) {
+    if (!card || !card.id) return false
     const favorites = this.getFavorites()
-    const index = favorites.findIndex((item) => item.id === card.id)
-    if (index >= 0) {
-      favorites.splice(index, 1)
-      wx.setStorageSync("favoriteCards", favorites)
-      return false
+    const index = favorites.findIndex(item => item.id === card.id)
+    if (index >= 0) favorites.splice(index, 1)
+    else {
+      if (favorites.length >= 50) throw new Error("收藏已满50张，请先移除一些卡片")
+      favorites.unshift({ ...card, savedAt: Date.now() })
     }
-    wx.setStorageSync("favoriteCards", [{ ...card, savedAt: Date.now() }, ...favorites].slice(0, 50))
-    return true
+    wx.setStorageSync("favoriteCards", favorites)
+    return index < 0
   },
-
-  getHistory() {
-    return wx.getStorageSync("drawHistory") || []
-  },
-
+  getHistory() { return this.readArray("drawHistory") },
   addHistory(card) {
-    const history = this.getHistory().filter((item) => item.id !== card.id)
+    const history = this.getHistory()
+    if (history.some(item => item.id === card.id)) return
     wx.setStorageSync("drawHistory", [{ ...card, drawnAt: Date.now() }, ...history].slice(0, 30))
+  },
+  recordVisit() {
+    const today = getDateInfo().key
+    const visits = this.readArray("visitDates").filter(validDate)
+    if (!visits.includes(today)) {
+      try { wx.setStorageSync("visitDates", [...visits, today].sort().slice(-400)) } catch (error) { console.warn("访问记录未能保存", error) }
+    }
+  },
+  getStreak() {
+    const dates = new Set(this.readArray("visitDates"))
+    let day = Date.parse(getDateInfo().key + "T00:00:00Z"), streak = 0
+    while (dates.has(new Date(day).toISOString().slice(0, 10))) { streak += 1; day -= 86400000 }
+    return streak
+  },
+  getCardPath(card) {
+    const sourceId = card.sourceId || (card.id.match(/^oracle-\d+/) || [""])[0]
+    return "/pages/detail/detail?v=" + (card.contentVersion || "legacy") + "&type=" + card.type + "&sign=" + encodeURIComponent(card.sign) + "&date=" + card.date + (card.type === "oracle" ? "&source=" + sourceId : "")
+  },
+  resolveCard(query) {
+    let sign
+    try { sign = decodeURIComponent(query.sign || "") } catch (error) { return null }
+    if (!zodiacSigns.some(item => item.name === sign) || !validDate(query.date)) return null
+    if (query.v !== "v1" && query.v !== "legacy") return null
+    if (query.type === "daily") {
+      if (query.v === "v1") return this.getDailyCard(sign, query.date)
+      const info = this.getSignData(sign)
+      return { ...info.card, id: "daily-" + sign + "-" + query.date, type: "daily", sign, symbol: info.symbol, date: query.date, dateLabel: query.date }
+    }
+    return query.type === "oracle" ? this.buildOracle(query.source, sign, query.date) : null
   }
 })

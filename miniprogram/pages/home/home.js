@@ -1,56 +1,36 @@
 Page({
-  data: {
-    selectedSign: "双鱼座",
-    selectedIndex: 11,
-    signNames: [],
-    dateLabel: "",
-    card: {},
-    isFavorite: false,
-    cardAnimating: false
+  data: { selectedSign: "双鱼座", selectedIndex: 11, signNames: [], dateLabel: "", card: {}, isFavorite: false, cardAnimating: false },
+  onLoad(query) {
+    const app = getApp()
+    let sign
+    try { sign = decodeURIComponent((query && query.sign) || "") } catch (error) { return }
+    if (app.globalData.zodiacSigns.some(item => item.name === sign)) app.setSelectedSign(sign)
   },
-
-  onLoad() {
-    this.refreshCard()
-  },
-
-  onShow() {
-    this.refreshCard()
-  },
-
+  onShow() { this.refreshCard() },
+  onUnload() { clearTimeout(this.animationTimer) },
   refreshCard() {
-    const app = getApp()
-    const selectedSign = app.globalData.selectedSign
-    const signNames = app.globalData.zodiacSigns.map((item) => item.name)
-    const selectedIndex = Math.max(0, signNames.indexOf(selectedSign))
+    const app = getApp(), selectedSign = app.globalData.selectedSign
+    const signNames = app.globalData.zodiacSigns.map(item => item.name)
     const card = app.getDailyCard(selectedSign)
-    this.setData({ selectedSign, selectedIndex, signNames, dateLabel: card.dateLabel, card, isFavorite: app.isFavorite(card.id) })
+    this.setData({ selectedSign, selectedIndex: signNames.indexOf(selectedSign), signNames, dateLabel: card.dateLabel, card, isFavorite: app.isFavorite(card.id) })
   },
-
   chooseSign(event) {
-    const app = getApp()
-    const selectedIndex = Number(event.detail.value)
-    const selectedSign = app.globalData.zodiacSigns[selectedIndex].name
-    app.setSelectedSign(selectedSign)
-    const card = app.getDailyCard(selectedSign)
-    this.setData({ selectedSign, selectedIndex, dateLabel: card.dateLabel, card, isFavorite: app.isFavorite(card.id), cardAnimating: true })
-    setTimeout(() => this.setData({ cardAnimating: false }), 520)
+    try {
+      getApp().setSelectedSign(this.data.signNames[Number(event.detail.value)])
+      this.refreshCard()
+      this.setData({ cardAnimating: true })
+      clearTimeout(this.animationTimer)
+      this.animationTimer = setTimeout(() => this.setData({ cardAnimating: false }), 520)
+    } catch (error) { wx.showToast({ title: "未能保存星座，请重试", icon: "none" }) }
   },
-
-  openDraw() {
-    wx.switchTab({ url: "/pages/draw/draw" })
-  },
-
+  openDraw() { wx.switchTab({ url: "/pages/draw/draw" }) },
+  openDetail() { wx.navigateTo({ url: getApp().getCardPath(this.data.card) }) },
   saveCard() {
-    const app = getApp()
-    const isFavorite = app.toggleFavorite(this.data.card)
-    this.setData({ isFavorite })
-    wx.showToast({ title: isFavorite ? "已收藏" : "已取消收藏", icon: "success" })
+    try {
+      const isFavorite = getApp().toggleFavorite(this.data.card)
+      this.setData({ isFavorite })
+      wx.showToast({ title: isFavorite ? "已收藏" : "已取消收藏", icon: "success" })
+    } catch (error) { wx.showToast({ title: error.message || "保存失败，请重试", icon: "none" }) }
   },
-
-  onShareAppMessage() {
-    return {
-      title: `${this.data.selectedSign}的今日星象卡｜${this.data.card.title}`,
-      path: `/pages/home/home?sign=${encodeURIComponent(this.data.selectedSign)}`
-    }
-  }
+  onShareAppMessage() { return { title: this.data.selectedSign + "的今日卡｜" + this.data.card.title, path: getApp().getCardPath(this.data.card) } }
 })

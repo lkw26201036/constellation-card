@@ -1,27 +1,17 @@
 Page({
-  data: {
-    cards: [],
-    history: []
-  },
-
-  onShow() {
-    this.loadData()
-  },
-
-  loadData() {
-    const app = getApp()
-    this.setData({
-      cards: app.getFavorites(),
-      history: app.getHistory()
-    })
-  },
-
-  removeCard(event) {
+  data: { cards: [], history: [] },
+  onShow() { this.loadData() },
+  loadData() { this.setData({ cards: getApp().getFavorites(), history: getApp().getHistory() }) },
+  openCard(event) {
     const id = event.currentTarget.dataset.id
-    const card = this.data.cards.find((item) => item.id === id)
+    wx.navigateTo({ url: "/pages/detail/detail?local=" + encodeURIComponent(id) })
+  },
+  removeCard(event) {
+    const card = this.data.cards.find(item => item.id === event.currentTarget.dataset.id)
     if (!card) return
-    getApp().toggleFavorite(card)
-    this.loadData()
-    wx.showToast({ title: "已取消收藏", icon: "success" })
+    wx.showModal({ title: "取消收藏？", content: "取消后将从收藏列表移除。", success: result => {
+      if (!result.confirm) return
+      try { getApp().toggleFavorite(card); this.loadData() } catch (error) { wx.showToast({ title: "操作失败，请重试", icon: "none" }) }
+    } })
   }
 })

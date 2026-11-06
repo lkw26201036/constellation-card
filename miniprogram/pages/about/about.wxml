@@ -1,0 +1,10 @@
+<view class="page-shell about-page">
+  <view class="title">使用与数据说明</view>
+  <view class="version">体验版 V0.3 · 更新于2026年11月7日</view>
+  <view class="section"><view class="heading">卡片的用途</view><view>星座卡与抽签文案用于娱乐、记录心情和自我探索，不构成对未来的保证，也不作为医疗、投资或其他重要决定的依据。</view></view>
+  <view class="section"><view class="heading">每日内容与抽签规则</view><view>每日卡使用本地14主题内容库，按设备日期与星座轮换，主题会重复。每天以设备本地时间零点为界，每台设备免费抽签一次，切换星座不增加次数。当日结果会保存，重新打开仍可查看。当前次数规则只用于本地体验。</view></view>
+  <view class="section"><view class="heading">保存在设备上的数据</view><view>当前版本将星座选择、收藏（最多50张）、近期抽签记录（最多30条）、当天抽签结果与访问日期（最多400天）保存在微信本地存储中。连续访问天数自本版开始记录，最多展示400天。没有账号同步，不收集生日、手机号、定位或通讯录。</view></view>
+  <view class="section"><view class="heading">分享内容</view><view>主动分享时，链接会包含卡片类型、内容版本、星座、日期及卡片编号，以便接收者看到同一内容。链接不包含你的收藏列表和访问记录。请只分享你愿意公开的内容。</view></view>
+  <view class="section"><view class="heading">反馈与清除数据</view><view>“我的”页面的“问题与建议”打开微信提供的反馈界面。反馈内容按该界面的提示提交。你可在收藏页取消收藏，也可通过微信的小程序管理功能清理本地数据；清理后本程序无法恢复。</view></view>
+  <view class="section"><view class="heading">当前服务范围</view><view>当前版本没有接入广告、付费、云端数据库或第三方统计服务。上线或新增数据处理能力前，将更新说明并完善微信小程序后台的隐私保护配置。</view></view>
+</view>

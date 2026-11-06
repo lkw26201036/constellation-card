@@ -9,7 +9,7 @@
     </picker>
   </view>
 
-  <view class="card hero-card {{cardAnimating ? 'card-enter' : ''}}">
+  <view bindtap="openDetail" class="card hero-card {{cardAnimating ? 'card-enter' : ''}}">
     <view class="card-glow"></view>
     <view class="card-meta">{{card.sign}} · 今日能量卡</view>
     <view class="card-title">{{card.title}}</view>
@@ -36,4 +36,5 @@
     <view class="tip-mark">✦</view>
     <view>{{card.tip}}</view>
   </view>
+  <view class="daily-footnote">每天更新一张卡 · 本地内容按主题轮换</view>
 </view>

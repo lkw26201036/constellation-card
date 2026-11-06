@@ -1,0 +1,30 @@
+<view class="page-shell detail-page">
+  <block wx:if="{{card}}">
+    <view class="eyebrow">{{card.type === 'daily' ? '每日星座卡' : '抽签结果'}} · {{card.dateLabel || card.date}}</view>
+    <view class="detail-card {{card.type === 'oracle' ? 'oracle' : ''}}">
+      <view class="card-symbol">{{card.symbol || '✦'}}</view>
+      <view class="sign">{{card.sign}}</view>
+      <view class="title">{{card.title}}</view>
+      <view class="keyword">{{card.keyword}}</view>
+      <view class="body">{{card.summary || card.text}}</view>
+      <view wx:if="{{card.type === 'daily'}}" class="luck">幸运色 · {{card.color}}　幸运数 · {{card.number}}</view>
+    </view>
+    <view class="advice">
+      <view class="section-title">今天可以试试</view>
+      <view class="body">{{card.tip || card.advice}}</view>
+      <block wx:if="{{card.signNote}}"><view class="section-title sign-note">给{{card.sign}}的小提醒</view><view class="body">{{card.signNote}}</view></block>
+    </view>
+    <view class="actions">
+      <button class="primary-button" bindtap="tryMine">{{card.type === 'daily' ? '查看我的今日卡' : '领取我的今日签'}}</button>
+      <button class="ghost-button" bindtap="saveCard">{{isFavorite ? '已收藏 · 点击取消' : '收藏这张卡'}}</button>
+      <button class="ghost-button" open-type="share">分享这张卡</button>
+    </view>
+    <view class="footnote">这是一张{{card.date}}的卡片 · 内容仅用于娱乐与自我探索</view>
+  </block>
+  <view wx:else class="empty">
+    <view class="card-symbol">✦</view>
+    <view class="title">暂时找不到这张卡</view>
+    <view class="body">链接可能不完整，或本地记录已被移除。</view>
+    <button class="primary-button" bindtap="tryMine">领取我的今日卡</button>
+  </view>
+</view>

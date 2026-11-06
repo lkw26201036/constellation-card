@@ -179,3 +179,5 @@
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6rpx); }
 }
+
+.daily-footnote { margin-top: 28rpx; text-align: center; font-size: 22rpx; color: #8d857d; }

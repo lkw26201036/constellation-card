@@ -1,0 +1,18 @@
+.eyebrow { color: #7e7166; font-size: 24rpx; margin-bottom: 28rpx; }
+.detail-card { border-radius: 32rpx; padding: 42rpx 36rpx; background: #e5d5c7; color: #493e36; }
+.detail-card.oracle { background: #d5dfe4; }
+.card-symbol { font-size: 76rpx; margin-bottom: 20rpx; }
+.sign { font-size: 25rpx; color: #6a5b52; }
+.title { font-size: 46rpx; line-height: 1.4; font-weight: 600; margin-top: 20rpx; }
+.keyword { display: inline-block; font-size: 26rpx; margin-top: 22rpx; border: 1rpx solid #aa9584; padding: 8rpx 20rpx; border-radius: 99rpx; }
+.body { font-size: 29rpx; line-height: 1.85; margin-top: 24rpx; }
+.luck { font-size: 24rpx; margin-top: 36rpx; padding-top: 24rpx; border-top: 1rpx solid #c9b7a8; line-height: 1.8; }
+.advice { padding: 32rpx; margin-top: 24rpx; background: #fffaf4; border-radius: 26rpx; }
+.section-title { font-size: 28rpx; font-weight: 600; }
+.sign-note { margin-top: 32rpx; }
+.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 18rpx; margin-top: 30rpx; }
+.actions .primary-button { grid-column: span 2; }
+.actions button { width: 100%; box-sizing: border-box; font-size: 27rpx; }
+.footnote { font-size: 22rpx; line-height: 1.8; color: #7e7166; margin-top: 28rpx; text-align: center; }
+.empty { padding-top: 100rpx; text-align: center; }
+.empty button { margin-top: 40rpx; }

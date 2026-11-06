@@ -1,0 +1,4 @@
+.title { font-size: 42rpx; font-weight: 600; }
+.version { margin-top: 14rpx; color: #7e7166; font-size: 23rpx; }
+.section { margin-top: 28rpx; background: #fffaf4; border-radius: 24rpx; padding: 28rpx; font-size: 27rpx; line-height: 1.85; }
+.heading { font-weight: 600; margin-bottom: 12rpx; font-size: 29rpx; }

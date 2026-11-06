@@ -11,28 +11,29 @@
   <view class="streak-card">
     <view class="streak-number">{{streak}}</view>
     <view>
-      <view class="streak-title">连续来到这里</view>
+      <view class="streak-title">连续访问天数</view>
       <view class="muted">保持一点点好奇，明天见。</view>
     </view>
   </view>
 
   <view class="profile-stats">
     <view><view class="profile-stat-number">{{favoriteCount}}</view><view class="muted">收藏卡片</view></view>
-    <view><view class="profile-stat-number">{{drawCount}}</view><view class="muted">抽签记录</view></view>
+    <view><view class="profile-stat-number">{{drawCount}}</view><view class="muted">近期抽签记录</view></view>
   </view>
 
   <view class="settings-list">
-    <picker class="setting-row" mode="selector" range="{{signNames}}" value="{{selectedIndex}}" bindchange="chooseSign">
-      <view>我的星座</view>
-      <view class="muted">{{selectedSign}} ›</view>
+    <picker mode="selector" range="{{signNames}}" value="{{selectedIndex}}" bindchange="chooseSign">
+      <view class="setting-row"><view>我的星座</view>
+      <view class="muted">{{selectedSign}} ›</view></view>
     </picker>
-    <view class="setting-row" bindtap="feedback">
-      <view>内容反馈</view>
-      <view class="muted">›</view>
+    <view class="setting-row feedback-row">
+      <view>问题与建议</view><view class="muted">›</view>
+      <button class="feedback-button" open-type="feedback" aria-label="问题与建议"></button>
     </view>
-    <view class="setting-row">
-      <view>隐私与用户协议</view>
+    <view class="setting-row" bindtap="openPrivacy">
+      <view>使用与数据说明</view>
       <view class="muted">›</view>
     </view>
   </view>
+  <view class="local-note">收藏最多50张，近期记录最多30条。数据保存在当前设备，清理小程序数据可能丢失。</view>
 </view>

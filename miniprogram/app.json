@@ -3,7 +3,9 @@
     "pages/home/home",
     "pages/draw/draw",
     "pages/collection/collection",
-    "pages/profile/profile"
+    "pages/profile/profile",
+    "pages/detail/detail",
+    "pages/about/about"
   ],
   "window": {
     "navigationBarTitleText": "星座卡牌",

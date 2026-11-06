@@ -5,11 +5,11 @@
 
   <view class="stats-row">
     <view class="stat-pill"><text class="stat-number">{{cards.length}}</text> 张收藏</view>
-    <view class="stat-pill"><text class="stat-number">{{history.length}}</text> 次抽签</view>
+    <view class="stat-pill"><text class="stat-number">{{history.length}}</text> 条近期记录</view>
   </view>
 
   <view wx:if="{{cards.length}}" class="collection-list">
-    <view wx:for="{{cards}}" wx:key="id" class="collection-card">
+    <view wx:for="{{cards}}" wx:key="id" class="collection-card" data-id="{{item.id}}" bindtap="openCard">
       <view class="collection-symbol">{{item.symbol || '✦'}}</view>
       <view class="collection-content">
         <view class="collection-title">{{item.title}}</view>
@@ -25,8 +25,8 @@
   </view>
 
   <view wx:if="{{history.length}}" class="history-section">
-    <view class="section-title">最近抽签</view>
-    <view wx:for="{{history}}" wx:key="id" class="history-row">
+    <view class="section-title">最近抽签 · 最多保留30条</view>
+    <view wx:for="{{history}}" wx:key="id" class="history-row" data-id="{{item.id}}" bindtap="openCard">
       <view>
         <view class="history-title">{{item.title}}</view>
         <view class="collection-meta">{{item.sign}} · {{item.keyword}}</view>

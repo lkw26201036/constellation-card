@@ -1,58 +1,36 @@
 Page({
-  data: {
-    selectedSign: "双鱼座",
-    isRevealed: false,
-    isDrawing: false,
-    result: {},
-    isFavorite: false
+  data: { selectedSign: "双鱼座", isRevealed: false, isDrawing: false, result: {}, isFavorite: false },
+  onShow() { this.refreshResult() },
+  onHide() { clearTimeout(this.drawTimer); this.setData({ isDrawing: false }) },
+  onUnload() { clearTimeout(this.drawTimer) },
+  refreshResult() {
+    const app = getApp(), result = app.getTodayDraw()
+    if (result) { try { app.addHistory(result) } catch (error) { console.warn("历史保存失败", error) } }
+    this.setData({ selectedSign: result ? result.sign : app.globalData.selectedSign, result: result || {}, isRevealed: Boolean(result), isDrawing: false, isFavorite: result ? app.isFavorite(result.id) : false })
   },
-
-  onLoad() {
-    this.refreshSign()
-  },
-
-  onShow() {
-    this.refreshSign()
-  },
-
-  refreshSign() {
-    const app = getApp()
-    this.setData({ selectedSign: app.globalData.selectedSign })
-  },
-
   reveal() {
     if (this.data.isRevealed || this.data.isDrawing) return
     this.setData({ isDrawing: true })
-    setTimeout(() => {
-      const app = getApp()
-      const result = app.getRandomOracle(this.data.selectedSign)
-      app.addHistory(result)
-      this.setData({
-        isDrawing: false,
-        isRevealed: true,
-        result,
-        isFavorite: app.isFavorite(result.id)
-      })
-      wx.vibrateShort({ type: "light" })
+    this.drawTimer = setTimeout(() => {
+      try {
+        getApp().drawToday()
+        this.refreshResult()
+        wx.vibrateShort({ type: "light", fail() {} })
+      } catch (error) {
+        this.refreshResult()
+        wx.showToast({ title: "保存未完成，请重试", icon: "none" })
+      }
     }, 560)
   },
-
-  reset() {
-    this.setData({ isRevealed: false, isDrawing: false, result: {}, isFavorite: false })
-  },
-
+  openDetail() { wx.navigateTo({ url: getApp().getCardPath(this.data.result) }) },
   saveResult() {
-    const app = getApp()
-    const isFavorite = app.toggleFavorite(this.data.result)
-    this.setData({ isFavorite })
-    wx.showToast({ title: isFavorite ? "已收藏" : "已取消收藏", icon: "success" })
+    try {
+      const isFavorite = getApp().toggleFavorite(this.data.result)
+      this.setData({ isFavorite })
+      wx.showToast({ title: isFavorite ? "已收藏" : "已取消收藏", icon: "success" })
+    } catch (error) { wx.showToast({ title: error.message || "保存失败，请重试", icon: "none" }) }
   },
-
   onShareAppMessage() {
-    const title = this.data.result.title ? `${this.data.selectedSign}抽到「${this.data.result.title}」` : "来抽一张今天的神谕卡"
-    return {
-      title,
-      path: `/pages/draw/draw?sign=${encodeURIComponent(this.data.selectedSign)}`
-    }
+    return this.data.isRevealed ? { title: "我抽到「" + this.data.result.title + "」，你呢？", path: getApp().getCardPath(this.data.result) } : { title: "来领取今天的一张卡", path: "/pages/draw/draw" }
   }
 })

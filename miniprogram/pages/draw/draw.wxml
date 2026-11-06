@@ -28,7 +28,8 @@
   <view wx:if="{{isRevealed}}" class="actions result-actions">
     <button class="primary-button" bindtap="saveResult">{{isFavorite ? '已收藏结果' : '收藏结果'}}</button>
     <button class="ghost-button" open-type="share">分享结果</button>
-    <button class="ghost-button" bindtap="reset">重新抽签</button>
+    <button class="ghost-button" bindtap="openDetail">查看完整卡片</button>
   </view>
-  <view wx:else class="draw-note">今天的第一张牌，已经在等你了</view>
+  <view class="draw-note">{{isRevealed ? "今日卡片已保存，明天再来领取新的一张" : "每台设备每天免费抽一次，切换星座不增加次数"}}</view>
+  <view class="draw-note">卡片用于娱乐与自我探索</view>
 </view>
