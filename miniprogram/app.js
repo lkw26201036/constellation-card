@@ -57,7 +57,7 @@ App({
   ...explore,
   ...research,
   ...preferences,
-  globalData: { selectedSign: "双鱼座", zodiacSigns, oracleCards },
+  globalData: { selectedSign: "双鱼座", launchAnimationSeen: false, zodiacSigns, oracleCards },
   onLaunch() {
     const selectedSign = wx.getStorageSync("selectedSign")
     if (zodiacSigns.some(item => item.name === selectedSign)) this.globalData.selectedSign = selectedSign

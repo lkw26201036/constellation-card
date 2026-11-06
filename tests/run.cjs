@@ -31,12 +31,12 @@ function query(card, app, encoded = false) {
   const link = app.getCardPath(card)
   return encoded ? Object.fromEntries(link.split('?')[1].split('&').map(part => part.split('='))) : Object.fromEntries(new URL(link, 'https://test').searchParams)
 }
-function page(name, app, wx = {}) {
+function page(name, app, wx = {}, runtime = {}) {
   let result
   vm.runInNewContext(fs.readFileSync(path.join(project, 'miniprogram/pages', name, name+'.js'), 'utf8'), {
-    Page: obj => {result=obj}, getApp: () => app, wx, console, setTimeout, clearTimeout, require: id => require(path.join(project,"miniprogram/pages",name,id))
+    Page: obj => {result=obj}, getApp: () => app, wx, console, setTimeout, clearTimeout, require: id => require(path.join(project,"miniprogram/pages",name,id)), ...runtime
   })
-  result.setData = update => Object.assign(result.data, update)
+  result.setData = (update, done) => { Object.assign(result.data, update); if(done)done() }
   return result
 }
 test('12 signs: same date stable; next date changes; 14 daily themes', () => {
@@ -260,6 +260,64 @@ test('home topic shortcut and result shortcut enter the requested draw mode', ()
 test('draft storage failure does not prevent the current quiz from continuing', () => {
  const env=makeApp();env.wx.setStorageSync=(key)=>{if(key==='quizDraft')throw new Error('storage')}
  const p=page('quiz',env.app);p.start();p.choose({currentTarget:{dataset:{index:0}}});assert.equal(p.data.draftSaved,false);p.next();assert.equal(p.data.index,1)
+})
+function fakeClock(){
+ let now=0,id=0;const tasks=new Map()
+ const api={setTimeout(run,delay){const key=++id;tasks.set(key,{run,at:now+delay});return key},clearTimeout(key){tasks.delete(key)}}
+ return{api,count:()=>tasks.size,advance(ms){const target=now+ms;let guard=0;while(true){const next=[...tasks].filter(([,task])=>task.at<=target).sort((a,b)=>a[1].at-b[1].at)[0];if(!next)break;if(++guard>100)throw new Error('Timer loop');now=next[1].at;tasks.delete(next[0]);next[1].run()}now=target}}
+}
+function launchFixture(initial={},options={},switcher){
+ const env=makeApp(initial),clock=fakeClock(),routes=[],backs=[]
+ const p=page('launch',env.app,{...env.wx,switchTab(opts){routes.push(opts.url);if(switcher)switcher(opts,routes.length);else opts.success()},navigateBack(opts){backs.push(opts.delta)}},clock.api)
+ p.onLoad(options);p.onShow();p.onReady()
+ return{...env,p,clock,routes,backs}
+}
+test('launch scene has twelve bounded constellations and finishes drawing within its finite sequence',()=>{
+ const {makeScene,INTRO_MS}=require('../miniprogram/pages/launch/scene'),{app}=makeApp()
+ for(const sign of app.globalData.zodiacSigns){const scene=makeScene(sign.name);assert.equal(scene.ticks.length,12);assert.ok(scene.lines.length>0);for(const point of scene.points){assert.ok(point.x>0&&point.x<520&&point.y>0&&point.y<520);assert.ok(point.delay+420<INTRO_MS)}for(const line of scene.lines)assert.ok(line.delay+440<INTRO_MS)}
+})
+test('launch sequence reveals the homepage once and does not fake a loading percentage',()=>{
+ const {INTRO_MS,EXIT_MS}=require('../miniprogram/pages/launch/scene'),env=launchFixture()
+ assert.equal(env.routes.length,0);env.clock.advance(32);assert.equal(env.p.data.running,true)
+ env.clock.advance(INTRO_MS);assert.equal(env.p.data.leaving,true);assert.equal(env.routes.length,0)
+ env.clock.advance(EXIT_MS);assert.equal(env.routes[0],'/pages/home/home');assert.equal(env.app.globalData.launchAnimationSeen,true)
+ env.p.skip();env.clock.advance(10000);assert.equal(env.routes.length,1)
+ const config=JSON.parse(fs.readFileSync(path.join(project,'miniprogram/app.json'),'utf8'));assert.equal(config.pages[0],'pages/launch/launch');assert.ok(config.tabBar.list.some(item=>item.pagePath==='pages/home/home'))
+ assert.ok(env.app.getCardPath(env.app.getDailyCard()).startsWith('/pages/detail/detail?'))
+})
+test('launch skip cancels pending timers and unload cannot redirect later',()=>{
+ const env=launchFixture();env.p.skip();env.p.skip();env.clock.advance(10000);assert.equal(env.routes.length,1);assert.equal(env.clock.count(),0)
+ const closed=launchFixture();closed.clock.advance(50);closed.p.onUnload();closed.clock.advance(10000);assert.equal(closed.routes.length,0);assert.equal(closed.clock.count(),0)
+})
+test('preview stays on its own screen, replays, and returns without claiming a real launch',()=>{
+ const env=launchFixture({selectedSign:'天秤座'},{preview:'1'});env.clock.advance(10000)
+ assert.equal(env.routes.length,0);assert.equal(env.p.data.finished,true);assert.equal(env.p.data.sign,'天秤座');assert.equal(env.app.globalData.launchAnimationSeen,false)
+ env.p.replay();assert.equal(env.p.data.running,false);env.clock.advance(32);assert.equal(env.p.data.running,true)
+ env.p.closePreview();assert.equal(env.backs[0],1);env.p.onUnload();env.clock.advance(10000);assert.equal(env.routes.length,0)
+})
+test('reduced motion and repeated launch entry do not force another animation wait',()=>{
+ const env=launchFixture({reducedMotion:true});assert.equal(env.routes.length,1);assert.equal(env.clock.count(),0)
+ const preview=launchFixture({reducedMotion:true},{preview:'1'});assert.equal(preview.routes.length,0);assert.equal(preview.p.data.finished,true)
+ const app=makeApp().app;app.globalData.launchAnimationSeen=true;let count=0;const clock=fakeClock(),p=page('launch',app,{getStorageSync(){},switchTab(opts){count++;opts.success()}},clock.api);p.onLoad({});p.onReady();assert.equal(count,1);assert.equal(clock.count(),0)
+})
+test('background interruption during the exit cannot leave launch stuck transparent',()=>{
+ const {INTRO_MS}=require('../miniprogram/pages/launch/scene'),env=launchFixture()
+ env.clock.advance(32+INTRO_MS);assert.equal(env.p.data.leaving,true)
+ env.p.onHide();assert.equal(env.clock.count(),0);env.clock.advance(5000);assert.equal(env.routes.length,0)
+ env.p.onShow();assert.equal(env.routes.length,1)
+})
+test('homepage navigation failure exposes a working retry and does not mark the launch complete',()=>{
+ const env=launchFixture({}, {},(opts,count)=>count===1?opts.fail():opts.success())
+ env.p.skip();assert.equal(env.p.data.error,true);assert.equal(env.app.globalData.launchAnimationSeen,false)
+ env.p.skip();assert.equal(env.routes.length,2);assert.equal(env.app.globalData.launchAnimationSeen,true)
+})
+test('replay waits for the old scene render acknowledgement before restarting animation',()=>{
+ const env=launchFixture({}, {preview:'1'});env.clock.advance(5000)
+ let acknowledge
+ env.p.setData=(update,done)=>{Object.assign(env.p.data,update);if(done)acknowledge=done}
+ env.p.replay();assert.equal(env.p.data.running,false);env.clock.advance(1000);assert.equal(env.p.data.running,false);assert.equal(env.clock.count(),0)
+ acknowledge();env.clock.advance(32);assert.equal(env.p.data.running,true)
+ env.p.onUnload();env.clock.advance(5000);assert.equal(env.routes.length,0)
 })
 console.log(passed+' checks passed')
 module.exports={passed}
