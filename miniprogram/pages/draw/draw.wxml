@@ -18,5 +18,5 @@
     <button wx:if="{{mode === 'free'}}" style="width:100%" class="ghost-button wide" bindtap="reset">再抽一张 · 免费</button><button wx:else style="width:100%" class="ghost-button wide" data-mode="free" bindtap="changeMode">主签已保留，继续自由抽卡 →</button>
   </block>
   <view class="draw-note">{{mode === 'daily' ? '每日主签每台设备保留一张，自由抽卡可反复体验' : '自由抽卡没有次数限制，内容仅供娱乐与自我探索'}}</view>
-  <button class="quiz-link" bindtap="openQuiz"><view><view class="quiz-kicker">8道题 · 趣味自我探索</view><view>你更喜欢哪种充电方式？</view></view><text>→</text></button>
+  <button style="width:100%" class="quiz-link" bindtap="openQuiz"><view><view class="quiz-kicker">8道题 · 趣味自我探索</view><view>你更喜欢哪种充电方式？</view></view><text>→</text></button>
 </view>

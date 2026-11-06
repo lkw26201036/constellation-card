@@ -6,7 +6,7 @@ Page({
     try { sign = decodeURIComponent((query && query.sign) || "") } catch (error) { return }
     if (app.globalData.zodiacSigns.some(item => item.name === sign)) app.setSelectedSign(sign)
   },
-  onShow() { this.refreshCard() },
+  onShow() { this.refreshCard(); getApp().track("home_view","home") },
   onUnload() { clearTimeout(this.animationTimer) },
   refreshCard() {
     const app = getApp(), selectedSign = app.globalData.selectedSign
@@ -33,5 +33,5 @@ Page({
       wx.showToast({ title: isFavorite ? "已收藏" : "已取消收藏", icon: "success" })
     } catch (error) { wx.showToast({ title: error.message || "保存失败，请重试", icon: "none" }) }
   },
-  onShareAppMessage() { return { title: this.data.selectedSign + "的今日卡｜" + this.data.card.title, path: getApp().getCardPath(this.data.card) } }
+  onShareAppMessage() { return { title: this.data.selectedSign + "的今日卡｜" + this.data.card.title, path: getApp().getSharePath(this.data.card) } }
 })

@@ -21,6 +21,8 @@ module.exports = {
     const index=choices[Math.floor(Math.random()*choices.length)]
     const card=this.buildTheme("theme-"+themeId+"-"+String(index+1).padStart(2,"0"),this.globalData.selectedSign,this.getDailyCard().date,moodId)
     this.addHistory(card)
+    this.unlockTheme(card)
+    this.track("draw_complete","theme")
     try { wx.setStorageSync("lastThemePick",{...previous,[themeId]:index}) } catch(error) { console.warn("去重记录未保存",error) }
     return card
   },
@@ -35,7 +37,8 @@ module.exports = {
     if(!result) throw new Error("请完成全部题目")
     const card=this.buildQuiz(result.id,this.globalData.selectedSign,this.getDailyCard().date)
     wx.setStorageSync("quizHistory",[{...card,completedAt:Date.now()},...this.getQuizHistory().filter(item=>item.id!==card.id)].slice(0,20))
+    this.track("quiz_complete","quiz")
     return card
   },
-  findLocalCard(id) { return [...this.getFavorites(),...this.getHistory(),...this.getQuizHistory()].find(item=>item.id===id) || null }
+  findLocalCard(id) { return [...this.getFavorites(),...this.getHistory(),...this.getQuizHistory(),...this.getThemeCatalog()].find(item=>item.id===id) || null }
 }

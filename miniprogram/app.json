@@ -6,7 +6,9 @@
     "pages/profile/profile",
     "pages/detail/detail",
     "pages/about/about",
-    "pages/quiz/quiz"
+    "pages/quiz/quiz",
+    "pages/poster/poster",
+    "pages/research/research"
   ],
   "window": {
     "navigationBarTitleText": "星座卡牌",
@@ -31,7 +33,7 @@
       },
       {
         "pagePath": "pages/collection/collection",
-        "text": "收藏"
+        "text": "卡册"
       },
       {
         "pagePath": "pages/profile/profile",

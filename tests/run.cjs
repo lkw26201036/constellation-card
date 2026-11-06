@@ -172,5 +172,61 @@ test('each sign has distinct nonempty constellation artwork', () => {
  assert.equal(arts.length,12);assert.equal(new Set(arts.map(a=>JSON.stringify(a.points))).size,12)
  for(const art of arts) {assert.ok(art.lines.length>0);for(const p of art.points){assert.ok(p.x>=0&&p.x<=600&&p.y>=0&&p.y<=185)}}
 })
+test('research is opt-in, separate share intent from opens, and never records arbitrary values', () => {
+ const env=makeApp(),app=env.app
+ app.onShow();app.drawTheme('work','calm');assert.equal(app.getResearchRows().length,0)
+ app.setResearchEnabled(true);app.onShow();app.track('share_intent','theme')
+ assert.equal(app.getResearchReport().counts['share_open:theme'],undefined)
+ const shared=app.buildTheme('theme-work-01','双鱼座','2026-11-07')
+ const p=page('detail',app,{setNavigationBarTitle(){}});p.onLoad({...query(shared,app),from:'share'})
+ assert.equal(app.getResearchReport().counts['share_open:theme'],1)
+ app.track('private_answer','home');app.track('quiz_complete','private identity')
+ assert.equal(JSON.stringify(app.getResearchReport()).includes('private'),false)
+ const before=JSON.stringify(app.getResearchRows());app.setResearchEnabled(false);app.track('home_view','home');assert.equal(JSON.stringify(app.getResearchRows()),before)
+})
+test('research counts next-day return on this device and keeps a bounded history', () => {
+ const env=makeApp();env.app.setResearchEnabled(true);env.app.onShow()
+ env.setDay(2026,11,8);env.app.onShow();env.app.onShow()
+ assert.equal(env.app.getResearchReport().nextDayReturns,1)
+ assert.equal(env.app.getResearchReport().activeDays,2)
+ for(let d=1;d<=31;d++){env.setDay(2026,12,d);env.app.onShow()}
+ assert.equal(env.app.getResearchRows().length,30)
+ assert.equal(env.app.getResearchReport().scope,'current_device_only')
+})
+test('catalog keeps unique encountered themes after recent history pruning and restart', () => {
+ const env=makeApp(),app=env.app
+ for(const theme of app.getThemes()) for(let i=1;i<=8;i++)app.unlockTheme(app.buildTheme('theme-'+theme.id+'-'+String(i).padStart(2,'0'),'双鱼座','2026-11-07'))
+ const card=app.getThemeCatalog()[0];app.unlockTheme(card)
+ for(let i=0;i<40;i++)app.addHistory({id:'later-'+i})
+ const restart=makeApp(env.storage)
+ assert.equal(restart.app.getThemeCatalog().length,24)
+ assert.equal(restart.app.findLocalCard(card.id).title,card.title)
+})
+test('card book filters categories and shows quiz results among recent results', () => {
+ const {app}=makeApp();const a=app.drawTheme('relation','calm'),b=app.finishQuiz(Array(8).fill(2));app.toggleFavorite(a);app.toggleFavorite(b)
+ const p=page('collection',app);p.onShow();p.chooseFilter({currentTarget:{dataset:{id:'quiz'}}})
+ assert.equal(p.data.visible.length,1);assert.equal(p.data.visible[0].type,'quiz')
+ p.chooseSource({currentTarget:{dataset:{id:'recent'}}});assert.equal(p.data.visible[0].id,b.id)
+})
+test('poster lays out complete curated text without overflowing its image', () => {
+ const renderer=require('../miniprogram/utils/poster'),{app}=makeApp()
+ const ctx={font:'',measureText(text){return{width:Array.from(text).reduce((s,c)=>s+(c.charCodeAt(0)>255?24:12),0)}}}
+ const cards=[app.getDailyCard(),app.buildTheme('theme-relation-01','白羊座','2026-11-07','busy'),...['quiet','connect','explore','order'].map(id=>app.buildQuiz(id,'天蝎座','2026-11-07'))]
+ for(const card of cards){const box=renderer.layout(ctx,card);assert.ok(box.height>box.artY+230);assert.equal(box.body.join(''),card.summary||card.text);assert.ok(box.height<1800);assert.ok(box.body.every(line=>ctx.measureText(line).width<=546))}
+})
+test('draw page state machine permits selection only after shuffle and supports free repeats', () => {
+ const {app}=makeApp(),p=page('draw',app,{showToast(){}})
+ p.onLoad();p.onShow();p.pick({currentTarget:{dataset:{index:0}}});assert.equal(app.getTodayDraw(),null)
+ p.changeMode({currentTarget:{dataset:{mode:'free'}}});p.skip();p.pick({currentTarget:{dataset:{index:1}}})
+ assert.equal(p.data.phase,'revealed');assert.equal(p.data.result.type,'theme');assert.equal(app.getTodayDraw(),null)
+ const first=p.data.result.sourceId;p.reset();p.skip();p.pick({currentTarget:{dataset:{index:2}}});assert.notEqual(p.data.result.sourceId,first)
+})
+test('quiz UI can finish all eight questions, restore previous choices and start over', () => {
+ const {app}=makeApp();let link
+ const p=page('quiz',app,{navigateTo(opts){link=opts.url;opts.success();opts.complete()},showToast(){}})
+ p.start()
+ for(let i=0;i<8;i++){p.choose({currentTarget:{dataset:{index:2}}});if(i===1){p.previous();assert.equal(p.data.selected,2);p.next()}p.next()}
+ assert.equal(app.getQuizHistory()[0].sourceId,'explore');assert.ok(link.includes('type=quiz'));assert.equal(p.data.answers.length,0);assert.equal(p.data.started,false)
+})
 console.log(passed+' checks passed')
 module.exports={passed}

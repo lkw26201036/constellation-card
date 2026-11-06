@@ -39,5 +39,5 @@ Page({
   openQuiz(){wx.navigateTo({url:"/pages/quiz/quiz"})},
   openDetail(){wx.navigateTo({url:getApp().getCardPath(this.data.result)})},
   saveResult(){try{const isFavorite=getApp().toggleFavorite(this.data.result);this.setData({isFavorite});wx.showToast({title:isFavorite?"已收藏":"已取消收藏",icon:"success"})}catch(error){wx.showToast({title:error.message||"保存失败",icon:"none"})}},
-  onShareAppMessage(){return this.data.result.id?{title:"我抽到「"+this.data.result.title+"」，你呢？",path:getApp().getCardPath(this.data.result)}:{title:"来抽一张属于你的卡",path:"/pages/draw/draw"}}
+  onShareAppMessage(){return this.data.result.id?{title:"我抽到「"+this.data.result.title+"」，你呢？",path:getApp().getSharePath(this.data.result)}:{title:"来抽一张属于你的卡",path:"/pages/draw/draw"}}
 })

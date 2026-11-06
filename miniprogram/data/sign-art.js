@@ -14,8 +14,8 @@ const entries = [
  ["双鱼座","PISCES","♓",[[85,70],[140,30],[190,80],[130,120],[300,100],[435,50],[495,90],[455,150]],[[0,1],[1,2],[2,3],[3,0],[2,4],[4,5],[5,6],[6,7],[7,5]]]
 ]
 const arts = entries.map((row,index) => ({ name:row[0], latin:row[1], symbol:row[2], index,
-  points:row[3].map(([x,y])=>({x,y})), edges:row[4],
-  lines:row[4].map(([a,b])=>{const p=row[3][a],q=row[3][b];return {x:p[0],y:p[1],length:Math.hypot(q[0]-p[0],q[1]-p[1]),angle:Math.atan2(q[1]-p[1],q[0]-p[0])*180/Math.PI}})
+  points:row[3].map(([x,y],id)=>({x,y,id})), edges:row[4],
+  lines:row[4].map(([a,b],id)=>{const p=row[3][a],q=row[3][b];return {id,x:p[0],y:p[1],length:Math.hypot(q[0]-p[0],q[1]-p[1]),angle:Math.atan2(q[1]-p[1],q[0]-p[0])*180/Math.PI}})
 }))
 function getArt(sign) { return arts.find(item=>item.name===sign) || arts[11] }
 module.exports = { arts, getArt }

@@ -30,6 +30,7 @@
       <view>问题与建议</view><view class="muted">›</view>
       <button class="feedback-button" open-type="feedback" aria-label="问题与建议"></button>
     </view>
+    <view class="setting-row" bindtap="openResearch"><view>本机体验记录</view><view class="muted">可选开启 ›</view></view>
     <view class="setting-row" bindtap="openPrivacy">
       <view>使用与数据说明</view>
       <view class="muted">›</view>

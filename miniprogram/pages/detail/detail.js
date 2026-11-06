@@ -5,6 +5,7 @@ Page({
     let localId
     try { localId = decodeURIComponent(query.local || "") } catch (error) { this.setData({ unavailable: true }); return }
     const card = localId ? app.findLocalCard(localId) : app.resolveCard(query)
+    if(card && query.from === "share") app.track("share_open",card.type)
     this.setData({ card: card || null, unavailable: !card })
     if (card) wx.setNavigationBarTitle({ title: card.type === "quiz" ? "测试结果" : card.type === "daily" ? "每日卡片" : "抽签结果" })
   },
@@ -16,9 +17,10 @@ Page({
       wx.showToast({ title: isFavorite ? "已收藏" : "已取消收藏", icon: "success" })
     } catch (error) { wx.showToast({ title: error.message || "保存失败，请重试", icon: "none" }) }
   },
+  openPoster() { wx.navigateTo({url:getApp().getCardPath(this.data.card).replace("/pages/detail/detail","/pages/poster/poster")}) },
   tryMine() { if(this.data.card && this.data.card.type === "quiz") { wx.navigateTo({url:"/pages/quiz/quiz"}); return } wx.switchTab({ url: !this.data.card || this.data.card.type === "daily" ? "/pages/home/home" : "/pages/draw/draw" }) },
   onShareAppMessage() {
     const card = this.data.card
-    return card ? { title: card.sign + " · " + card.title, path: getApp().getCardPath(card) } : { title: "给今天一张温柔的卡", path: "/pages/home/home" }
+    return card ? { title: card.sign + " · " + card.title, path: getApp().getSharePath(card) } : { title: "给今天一张温柔的卡", path: "/pages/home/home" }
   }
 })

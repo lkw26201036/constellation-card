@@ -50,16 +50,18 @@ function validDate(value) {
 }
 
 const explore = require("./services/explore")
+const research = require("./services/research")
 
 App({
   ...explore,
+  ...research,
   globalData: { selectedSign: "双鱼座", zodiacSigns, oracleCards },
   onLaunch() {
     const selectedSign = wx.getStorageSync("selectedSign")
     if (zodiacSigns.some(item => item.name === selectedSign)) this.globalData.selectedSign = selectedSign
     this.recordVisit()
   },
-  onShow() { this.recordVisit() },
+  onShow() { this.recordVisit(); this.track("app_open") },
   readArray(key) { const value = wx.getStorageSync(key); return Array.isArray(value) ? value : [] },
   setSelectedSign(signName) {
     if (!zodiacSigns.some(item => item.name === signName)) return
@@ -104,6 +106,7 @@ App({
     const card = this.buildOracle(source.id, sign, getDateInfo().key)
     // 先保存每日结果；后续打开时会修复历史，避免存储中断后重复抽取。
     wx.setStorageSync("dailyDraw", { date: card.date, card })
+    this.track("draw_complete","oracle")
     this.addHistory(card)
     return card
   },

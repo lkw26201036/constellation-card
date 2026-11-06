@@ -36,6 +36,6 @@
     <view class="tip-mark">✦</view>
     <view>{{card.tip}}</view>
   </view>
-  <button class="quiz-entry" bindtap="openQuiz"><view class="quiz-label">8道题 · 趣味测试</view><view>你更喜欢哪种充电方式？ →</view></button>
+  <button style="width:100%" class="quiz-entry" bindtap="openQuiz"><view class="quiz-label">8道题 · 趣味测试</view><view>你更喜欢哪种充电方式？ →</view></button>
   <view class="daily-footnote">每天更新一张卡 · 本地内容按主题轮换</view>
 </view>
