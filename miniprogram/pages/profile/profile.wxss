@@ -1,0 +1,69 @@
+.eyebrow {
+  color: #a1968c;
+  font-size: 23rpx;
+  letter-spacing: 2rpx;
+  margin-bottom: 12rpx;
+}
+
+.profile-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  font-size: 54rpx;
+  font-weight: 600;
+}
+
+.profile-orb {
+  width: 112rpx;
+  height: 112rpx;
+  line-height: 112rpx;
+  border-radius: 50%;
+  text-align: center;
+  background: #d7c3ad;
+  color: #fffaf4;
+  font-size: 48rpx;
+}
+
+.streak-card {
+  display: flex;
+  gap: 24rpx;
+  align-items: center;
+  margin-top: 54rpx;
+  padding: 34rpx;
+  background: #fffaf4;
+  border-radius: 28rpx;
+}
+
+.streak-number {
+  color: #aa8278;
+  font-size: 68rpx;
+  font-weight: 600;
+}
+
+.streak-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  margin-bottom: 10rpx;
+}
+
+.settings-list {
+  margin-top: 42rpx;
+  background: #fffaf4;
+  border-radius: 28rpx;
+  overflow: hidden;
+}
+
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 32rpx 28rpx;
+  border-bottom: 1rpx solid #f0e7de;
+  font-size: 27rpx;
+}
+
+.setting-row:last-child {
+  border-bottom: 0;
+}

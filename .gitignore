@@ -1,0 +1,14 @@
+# 微信开发者工具本地缓存
+.wechatdevtools/
+miniprogram_npm/
+node_modules/
+dist/
+
+# 本地环境和日志
+.env
+.env.*
+*.log
+
+# 操作系统文件
+.DS_Store
+Thumbs.db

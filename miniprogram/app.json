@@ -1,0 +1,41 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/draw/draw",
+    "pages/collection/collection",
+    "pages/profile/profile"
+  ],
+  "window": {
+    "navigationBarTitleText": "星座卡牌",
+    "navigationBarBackgroundColor": "#F6F1EA",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F6F1EA",
+    "backgroundTextStyle": "light"
+  },
+  "tabBar": {
+    "color": "#8D857D",
+    "selectedColor": "#6A5B52",
+    "backgroundColor": "#FFFCF8",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "今日"
+      },
+      {
+        "pagePath": "pages/draw/draw",
+        "text": "抽签"
+      },
+      {
+        "pagePath": "pages/collection/collection",
+        "text": "收藏"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

@@ -1,0 +1,67 @@
+.eyebrow {
+  color: #a1968c;
+  font-size: 23rpx;
+  letter-spacing: 2rpx;
+  margin-bottom: 12rpx;
+}
+
+.title {
+  font-size: 44rpx;
+  font-weight: 600;
+}
+
+.intro {
+  margin-top: 18rpx;
+  font-size: 26rpx;
+}
+
+.collection-list {
+  margin-top: 52rpx;
+}
+
+.collection-card {
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+  padding: 30rpx 24rpx;
+  margin-bottom: 18rpx;
+  border-radius: 24rpx;
+  background: #fffaf4;
+}
+
+.collection-symbol {
+  width: 74rpx;
+  height: 74rpx;
+  line-height: 74rpx;
+  text-align: center;
+  color: #fffaf4;
+  background: #b49375;
+  border-radius: 22rpx;
+  font-size: 32rpx;
+}
+
+.collection-content {
+  flex: 1;
+}
+
+.collection-title {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.collection-meta {
+  margin-top: 10rpx;
+  color: #a1968c;
+  font-size: 23rpx;
+}
+
+.collection-arrow {
+  color: #b7aaa0;
+  font-size: 42rpx;
+}
+
+.empty-state {
+  text-align: center;
+  color: #9d938b;
+  margin-top: 180rpx;
+}

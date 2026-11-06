@@ -1,0 +1,36 @@
+<view class="page-shell home-page">
+  <view class="home-head">
+    <view>
+      <view class="eyebrow">今日星象 · {{dateLabel}}</view>
+      <view class="title">给今天一张温柔的卡</view>
+    </view>
+    <button class="sign-picker" bindtap="chooseSign">{{selectedSign}}⌄</button>
+  </view>
+
+  <view class="card hero-card">
+    <view class="card-meta">今日能量卡</view>
+    <view class="card-title">{{card.title}}</view>
+    <view class="card-keyword">{{card.keyword}}</view>
+    <view class="card-summary">{{card.summary}}</view>
+    <view class="card-divider"></view>
+    <view class="card-foot">
+      <view>幸运色 · {{card.color}}</view>
+      <view>幸运数 · {{card.number}}</view>
+    </view>
+  </view>
+
+  <view class="actions">
+    <button class="primary-button" bindtap="openDraw">今天抽一签</button>
+    <button class="ghost-button" bindtap="saveCard">收藏卡片</button>
+    <button class="ghost-button" bindtap="shareCard">分享</button>
+  </view>
+
+  <view class="section-head">
+    <view class="section-title">今天的小提示</view>
+    <view class="muted">轻轻做一件让自己开心的事</view>
+  </view>
+  <view class="tip-card">
+    <view class="tip-mark">✦</view>
+    <view>把注意力放回当下，答案会在你愿意停下来的时候出现。</view>
+  </view>
+</view>

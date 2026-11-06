@@ -1,0 +1,33 @@
+<view class="page-shell profile-page">
+  <view class="eyebrow">我的星图</view>
+  <view class="profile-head">
+    <view>
+      <view class="title">{{selectedSign}}</view>
+      <view class="muted">今天也和自己站在一起</view>
+    </view>
+    <view class="profile-orb">✦</view>
+  </view>
+
+  <view class="streak-card">
+    <view class="streak-number">{{streak}}</view>
+    <view>
+      <view class="streak-title">连续来到这里</view>
+      <view class="muted">保持一点点好奇，明天见。</view>
+    </view>
+  </view>
+
+  <view class="settings-list">
+    <view class="setting-row" bindtap="chooseSign">
+      <view>我的星座</view>
+      <view class="muted">{{selectedSign}} ›</view>
+    </view>
+    <view class="setting-row" bindtap="feedback">
+      <view>内容反馈</view>
+      <view class="muted">›</view>
+    </view>
+    <view class="setting-row">
+      <view>隐私与用户协议</view>
+      <view class="muted">›</view>
+    </view>
+  </view>
+</view>

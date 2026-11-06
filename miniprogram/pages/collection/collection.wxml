@@ -1,0 +1,17 @@
+<view class="page-shell collection-page">
+  <view class="eyebrow">我的卡牌</view>
+  <view class="title">收藏的温柔时刻</view>
+  <view class="muted intro">把喜欢的卡片留在这里，偶尔回来看看。</view>
+
+  <view wx:if="{{cards.length}}" class="collection-list">
+    <view wx:for="{{cards}}" wx:key="title" class="collection-card">
+      <view class="collection-symbol">✦</view>
+      <view class="collection-content">
+        <view class="collection-title">{{item.title}}</view>
+        <view class="collection-meta">{{item.keyword}} · {{item.date}}</view>
+      </view>
+      <view class="collection-arrow">›</view>
+    </view>
+  </view>
+  <view wx:else class="empty-state">还没有收藏卡片</view>
+</view>

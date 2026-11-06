@@ -1,0 +1,29 @@
+<view class="page-shell draw-page">
+  <view class="draw-head">
+    <view class="eyebrow">今日神谕</view>
+    <view class="title">{{selectedSign}}的直觉卡</view>
+    <view class="muted">让今天的答案，慢一点出现</view>
+  </view>
+
+  <view class="oracle-card {{isRevealed ? 'revealed' : ''}}" bindtap="reveal">
+    <block wx:if="{{!isRevealed}}">
+      <view class="card-back-symbol">✦</view>
+      <view class="card-back-title">点击翻开</view>
+      <view class="card-back-caption">每日免费抽签一次</view>
+    </block>
+    <block wx:else>
+      <view class="result-label">今日神谕卡</view>
+      <view class="result-title">{{result.title}}</view>
+      <view class="result-keyword">{{result.keyword}}</view>
+      <view class="result-text">{{result.text}}</view>
+      <view class="result-advice">{{result.advice}}</view>
+    </block>
+  </view>
+
+  <view wx:if="{{isRevealed}}" class="actions">
+    <button class="primary-button" bindtap="saveResult">收藏结果</button>
+    <button class="ghost-button" bindtap="shareResult">分享结果</button>
+    <button class="ghost-button" bindtap="reset">再看一次</button>
+  </view>
+  <view wx:else class="draw-note">今天的第一张牌，已经在等你了</view>
+</view>

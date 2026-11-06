@@ -1,0 +1,103 @@
+.draw-head {
+  margin-bottom: 46rpx;
+}
+
+.eyebrow {
+  color: #a1968c;
+  font-size: 23rpx;
+  letter-spacing: 2rpx;
+  margin-bottom: 12rpx;
+}
+
+.title {
+  font-size: 44rpx;
+  font-weight: 600;
+  margin-bottom: 14rpx;
+}
+
+.oracle-card {
+  min-height: 700rpx;
+  border-radius: 34rpx;
+  padding: 48rpx 40rpx;
+  box-sizing: border-box;
+  background: linear-gradient(150deg, #8f9eac 0%, #697986 100%);
+  color: #fffaf4;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 24rpx 50rpx rgba(72, 80, 88, 0.2);
+  transition: all 280ms ease;
+}
+
+.oracle-card.revealed {
+  align-items: flex-start;
+  text-align: left;
+  background: linear-gradient(150deg, #c9a995 0%, #aa8278 100%);
+}
+
+.card-back-symbol {
+  font-size: 108rpx;
+  margin-bottom: 36rpx;
+}
+
+.card-back-title {
+  font-size: 42rpx;
+  font-weight: 600;
+}
+
+.card-back-caption {
+  margin-top: 18rpx;
+  opacity: 0.72;
+  font-size: 24rpx;
+}
+
+.result-label {
+  font-size: 24rpx;
+  opacity: 0.75;
+  letter-spacing: 2rpx;
+}
+
+.result-title {
+  font-size: 54rpx;
+  font-weight: 600;
+  margin-top: 120rpx;
+}
+
+.result-keyword {
+  font-size: 29rpx;
+  margin-top: 18rpx;
+}
+
+.result-text,
+.result-advice {
+  font-size: 28rpx;
+  line-height: 1.8;
+  margin-top: 36rpx;
+}
+
+.result-advice {
+  padding-top: 24rpx;
+  border-top: 1rpx solid rgba(255, 250, 244, 0.3);
+  font-size: 25rpx;
+  opacity: 0.84;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18rpx;
+  margin-top: 28rpx;
+}
+
+.actions .primary-button {
+  grid-column: span 2;
+}
+
+.draw-note {
+  text-align: center;
+  color: #9d938b;
+  font-size: 25rpx;
+  margin-top: 30rpx;
+}
