@@ -388,6 +388,15 @@ test('shared visual tokens define the approved constellation palette',()=>{
   assert.doesNotMatch(pageCss,/#(?:7c3aed|8b5cf6|a855f7)/i)
  }
 })
+test('home and draw pages distinguish daily card from main draw',()=>{
+ const home=fs.readFileSync(path.join(project,'miniprogram/pages/home/home.wxml'),'utf8')
+ const draw=fs.readFileSync(path.join(project,'miniprogram/pages/draw/draw.wxml'),'utf8')
+ const drawCss=fs.readFileSync(path.join(project,'miniprogram/pages/draw/draw.wxss'),'utf8')
+ assert.match(home,/今日星座卡/)
+ assert.match(home,/抽一张今日主签/)
+ assert.match(draw,/今日主签/)
+ assert.match(drawCss,/mode-grid|mode-group/)
+})
 require('./ritual.cjs')({test,makeApp,page,query,fakeClock,project})
 require('./connection.cjs')({test,makeApp,page,query,fakeClock,project})
 console.log(passed+' checks passed')
