@@ -409,6 +409,10 @@ test('functional arrows stay text presentation and release labels stay current',
  for(const file of files)assert.doesNotMatch(fs.readFileSync(file,'utf8'),/↗(?!\uFE0E)/)
  for(const file of ['miniprogram/pages/about/about.wxml','miniprogram/pages/profile/profile.wxml'])assert.match(fs.readFileSync(path.join(project,file),'utf8'),/V1\.0/)
 })
+test('dice poster copy uses the current star dice name',()=>{
+ const poster=fs.readFileSync(path.join(project,'miniprogram/utils/poster.js'),'utf8')
+ assert.match(poster,/星光骰子/)
+})
 require('./ritual.cjs')({test,makeApp,page,query,fakeClock,project})
 require('./connection.cjs')({test,makeApp,page,query,fakeClock,project})
 console.log(passed+' checks passed')
