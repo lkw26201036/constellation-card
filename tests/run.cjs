@@ -208,7 +208,7 @@ test('weekly research events stay aggregate and opt-in', () => {
 })
 test('weekly page exposes lightweight feedback actions', () => {
  const wxml=fs.readFileSync(path.join(project,'miniprogram/pages/weekly/weekly.wxml'),'utf8'),js=fs.readFileSync(path.join(project,'miniprogram/pages/weekly/weekly.js'),'utf8')
- assert.match(wxml,/有帮助/);assert.match(wxml,/换个角度/);assert.match(js,/weekly_feedback/)
+ assert.match(wxml,/有帮助/);assert.match(wxml,/换个角度/);assert.match(js,/weekly_feedback/);assert.match(js,/event\.detail\.action\.status===\"done\"/)
 })
 test('catalog keeps unique encountered themes after recent history pruning and restart', () => {
  const env=makeApp(),app=env.app
