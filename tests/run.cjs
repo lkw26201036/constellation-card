@@ -480,6 +480,10 @@ test('weekly content packs provide three stable cards and pack progress',()=>{
  assert.equal(pack.cards.length,3);assert.ok(pack.theme.title);assert.equal(JSON.stringify(pack),JSON.stringify(app.getWeeklyPack('2026-11-08')));assert.notEqual(pack.theme.id,app.getWeeklyPack('2026-11-09').theme.id)
  const card=pack.cards[0];app.saveAction(card);app.setActionStatus(card.id,'done');const review=app.getWeeklyReview('2026-11-07');assert.equal(review.packActionCount,1);assert.equal(review.packDoneCount,1)
 })
+test('weekly page renders pack cards and pack progress',()=>{
+ const wxml=fs.readFileSync(path.join(project,'miniprogram/pages/weekly/weekly.wxml'),'utf8')
+ assert.match(wxml,/pack\.cards/);assert.match(wxml,/packDoneCount/);assert.match(wxml,/action-followup/);assert.match(wxml,/本周主题卡包/)
+})
 require('./ritual.cjs')({test,makeApp,page,query,fakeClock,project})
 require('./connection.cjs')({test,makeApp,page,query,fakeClock,project})
 console.log(passed+' checks passed')
