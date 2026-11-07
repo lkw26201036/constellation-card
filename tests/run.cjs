@@ -247,6 +247,19 @@ test('journey summary is deterministic and shareable without local state',()=>{
  const query={v:'j1',start:'2026-11-07',date:'2026-11-13'}
  assert.equal(JSON.stringify(restarted.app.getJourneyShareCard(query)),JSON.stringify(summary));assert.equal(JSON.stringify(query).includes('completedAt'),false)
 })
+test('journey page is registered with action followup and progress copy',()=>{
+ const config=JSON.parse(fs.readFileSync(path.join(project,'miniprogram/app.json'),'utf8')),wxml=fs.readFileSync(path.join(project,'miniprogram/pages/journey/journey.wxml'),'utf8'),json=JSON.parse(fs.readFileSync(path.join(project,'miniprogram/pages/journey/journey.json'),'utf8'))
+ assert.ok(config.pages.includes('pages/journey/journey'));assert.match(wxml,/7 天/);assert.match(wxml,/action-followup/);assert.match(wxml,/开始七日旅程/);assert.match(wxml,/查看七日总结/);assert.equal(json.usingComponents['action-followup'],'/components/action-followup/action-followup')
+})
+test('journey page starts, refreshes and opens the completed summary',()=>{
+ const env=makeApp(),calls=[];const p=page('journey',env.app,{navigateTo:opts=>calls.push(opts.url),switchTab:opts=>calls.push(opts.url),showToast(){}})
+ p.onShow();assert.equal(p.data.journey.started,false);p.start();assert.equal(p.data.journey.started,true)
+ p.openHome();p.openWeekly();assert.deepEqual(calls.slice(-2),['/pages/home/home','/pages/weekly/weekly'])
+})
+test('journey page keeps guest state and handles incomplete state without throwing',()=>{
+ const env=makeApp(),p=page('journey',env.app,{showToast(){}})
+ p.onShow();assert.equal(p.data.journey.completed,false);p.actionChanged({detail:{action:null}});assert.equal(p.data.journey.started,false)
+})
 test('catalog keeps unique encountered themes after recent history pruning and restart', () => {
  const env=makeApp(),app=env.app
  for(const theme of app.getThemes()) for(let i=1;i<=8;i++)app.unlockTheme(app.buildTheme('theme-'+theme.id+'-'+String(i).padStart(2,'0'),'双鱼座','2026-11-07'))

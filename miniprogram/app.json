@@ -16,6 +16,7 @@
     "pages/dice/dice",
     "pages/echo/echo",
     "pages/weekly/weekly",
+    "pages/journey/journey",
     "pages/share-preview/share-preview"
   ],
   "window": {
