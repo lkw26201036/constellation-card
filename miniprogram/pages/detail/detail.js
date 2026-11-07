@@ -7,7 +7,7 @@ Page({
     const card = localId ? app.findLocalCard(localId) : app.resolveCard(query)
     if(card && query.from === "share") app.track("share_open",card.type)
     this.setData({ card: card || null, unavailable: !card, shared: query.from === "share" })
-    if (card) wx.setNavigationBarTitle({ title: card.type === "quiz" ? "测试结果" : card.type === "daily" ? "每日卡片" : "抽签结果" })
+    if (card) wx.setNavigationBarTitle({ title: card.type === "spread" ? "这组星光" : card.type === "book" ? "答案之书" : card.type === "quiz" ? "测试结果" : card.type === "daily" ? "每日卡片" : "抽签结果" })
   },
   onShow() { if (this.data.card) this.setData({ isFavorite: getApp().isFavorite(this.data.card.id) }) },
   saveCard() {
@@ -21,6 +21,8 @@ Page({
   secondaryAction() { if(this.data.shared)this.openPoster();else this.tryMine() },
   tryMine() {
     const app=getApp(),card=this.data.card
+    if(card&&card.type==="spread"){wx.navigateTo({url:"/pages/spread/spread"});return}
+    if(card&&card.type==="book"){wx.navigateTo({url:"/pages/answer/answer"});return}
     if(card&&card.type==="quiz"){wx.navigateTo({url:"/pages/quiz/quiz"});return}
     if(card&&card.type==="theme"){app.globalData.pendingDrawMode=null;app.globalData.pendingTheme=card.themeId}
     else if(card&&card.type==="oracle"){app.globalData.pendingTheme=null;app.globalData.pendingDrawMode="daily"}

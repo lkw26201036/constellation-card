@@ -1,9 +1,8 @@
 <view class="page-shell draw-page">
   <view class="eyebrow">星座卡牌 · {{selectedSign === '通用' ? '随心探索' : selectedSign}}</view><view class="page-title">给此刻，抽一张卡</view>
-  <view class="mode-switch"><button class="mode {{mode === 'daily' ? 'active' : ''}}" data-mode="daily" bindtap="changeMode">今日主签</button><button class="mode {{mode === 'free' ? 'active' : ''}}" data-mode="free" bindtap="changeMode">自由抽卡 · 可重抽</button></view>
+  <view class="mode-switch"><button class="mode {{mode === 'daily' ? 'active' : ''}}" data-mode="daily" bindtap="changeMode">今日主签</button><button class="mode" data-mode="spread" bindtap="changeMode">星光牌阵 ↗</button><button class="mode" data-mode="book" bindtap="changeMode">答案之书 ↗</button></view>
   <view wx:if="{{mode === 'free'}}" class="explore-options">
     <view class="section-label">选一个想聊的话题</view><view class="theme-grid"><button wx:for="{{themes}}" wx:key="id" class="theme {{themeId === item.id ? 'chosen' : ''}}" data-id="{{item.id}}" bindtap="changeTheme"><text class="theme-index">{{item.mark}}</text><view>{{item.name}}</view></button></view>
-    <view class="mood-row"><text>此刻的心情</text><button wx:for="{{moods}}" wx:key="id" style="width:124rpx;margin:0" class="mood {{moodId === item.id ? 'chosen' : ''}}" data-id="{{item.id}}" bindtap="changeMood">{{item.name}}</button></view>
   </view>
   <block wx:if="{{phase !== 'revealed'}}">
     <view class="stage-caption">{{phase === 'ready' ? (motion ? '先洗一洗牌，把注意力带回此刻' : '选一张卡，留意此刻的想法') : phase === 'shuffling' ? '正在洗牌…' : phase === 'flipping' ? '你的卡片正在翻开' : '凭直觉选一张，卡片没有好坏之分'}}</view>
@@ -15,7 +14,7 @@
     <reading-card card="{{result}}" show-advice="{{true}}" />
     <view wx:if="{{result.moodNote}}" class="mood-note">{{result.moodLabel}}的此刻 · {{result.moodNote}}</view>
     <view class="result-actions"><button class="primary-button result-action" bindtap="openDetail">查看与分享卡片</button><button class="ghost-button result-action" bindtap="saveResult">{{isFavorite ? '已收藏' : '收藏这张卡'}}</button></view>
-    <button wx:if="{{mode === 'free'}}" style="width:100%" class="ghost-button wide" bindtap="reset">再抽一张 · 免费</button><button wx:else style="width:100%" class="ghost-button wide" data-mode="free" bindtap="changeMode">主签已保留，继续自由抽卡 →</button>
+    <button wx:if="{{mode === 'free'}}" style="width:100%" class="ghost-button wide" bindtap="reset">再抽一张 · 免费</button><button wx:else style="width:100%" class="ghost-button wide" data-mode="spread" bindtap="changeMode">主签已保留，展开三张星光 →</button>
   </block>
   <view class="draw-note">{{mode === 'daily' ? '每日主签每台设备保留一张，自由抽卡可反复体验' : '自由抽卡没有次数限制，内容仅供娱乐与自我探索'}}</view>
   <button style="width:100%" class="quiz-link" bindtap="openQuiz"><view><view class="quiz-kicker">8道题 · 趣味自我探索</view><view>你更喜欢哪种充电方式？</view></view><text>→</text></button>

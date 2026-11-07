@@ -3,6 +3,8 @@ const quiz = require("../data/quiz")
 module.exports = {
   getThemes() { return themes.map(({id,name,caption,mark})=>({id,name,caption,mark})) },
   getMoods() { return moods },
+  buildThemePlain(sourceId,sign,date){const original=this.buildTheme(sourceId,sign,date,"calm");if(!original)return null;const {mood,moodLabel,moodNote,...card}=original;return{...card,id:sourceId+"-"+sign+"-"+date+"-plain",contentVersion:"t2"}},
+  drawThemePlain(themeId){const theme=themes.find(t=>t.id===themeId);if(!theme)throw new Error("请选择主题");const previous=wx.getStorageSync("lastThemePick")||{},choices=theme.cards.map((_,i)=>i).filter(i=>i!==previous[themeId]),index=choices[Math.floor(Math.random()*choices.length)];const card=this.buildThemePlain("theme-"+themeId+"-"+String(index+1).padStart(2,"0"),this.getCardIdentity(),this.getDailyCard().date);this.addHistory(card);this.unlockTheme(card);this.track("draw_complete","theme");try{wx.setStorageSync("lastThemePick",{...previous,[themeId]:index})}catch(e){console.warn("去重记录未保存",e)}return card},
   buildTheme(sourceId,sign,date,moodId="calm") {
     const match = /^theme-(relation|work|growth)-(\d{2})$/.exec(sourceId || "")
     const theme = match && themes.find(item=>item.id===match[1])
@@ -40,5 +42,5 @@ module.exports = {
     this.track("quiz_complete","quiz")
     return card
   },
-  findLocalCard(id) { return [...this.getFavorites(),...this.getHistory(),...this.getQuizHistory(),...this.getThemeCatalog()].find(item=>item.id===id) || null }
+  findLocalCard(id) { return [...this.getFavorites(),...this.getHistory(),...this.getQuizHistory(),...this.getThemeCatalog(),...this.getSpreadHistory(),...this.getAnswerHistory()].find(item=>item.id===id) || null }
 }

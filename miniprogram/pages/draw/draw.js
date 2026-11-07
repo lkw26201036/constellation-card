@@ -1,6 +1,6 @@
 Page({
-  data:{mode:"daily",selectedSign:"通用",themes:[],moods:[],themeId:"relation",moodId:"calm",phase:"ready",choice:-1,result:{},isRevealed:false,isDrawing:false,isFavorite:false,motion:true},
-  onLoad(){this.setData({themes:getApp().getThemes(),moods:getApp().getMoods()})},
+  data:{mode:"daily",selectedSign:"通用",themes:[],themeId:"relation",phase:"ready",choice:-1,result:{},isRevealed:false,isDrawing:false,isFavorite:false,motion:true},
+  onLoad(){this.setData({themes:getApp().getThemes()})},
   onShow(){
     const app=getApp(),pending=app.globalData.pendingTheme
     this.setData({motion:!app.getPreferences().reducedMotion})
@@ -17,12 +17,13 @@ Page({
     this.setData({selectedSign:result?result.sign:app.getCardIdentity(),result:result||{},phase:result?"revealed":"ready",isRevealed:!!result,isDrawing:false,isFavorite:result?app.isFavorite(result.id):false})
   },
   changeMode(event){
+    if(event.currentTarget.dataset.mode==="spread"){wx.navigateTo({url:"/pages/spread/spread"});return}
+    if(event.currentTarget.dataset.mode==="book"){wx.navigateTo({url:"/pages/answer/answer"});return}
     clearTimeout(this.drawTimer)
     this.setData({mode:event.currentTarget.dataset.mode})
     if(this.data.mode==="daily")this.refreshResult();else this.reset()
   },
   changeTheme(event){if(this.data.isDrawing)return;this.setData({themeId:event.currentTarget.dataset.id});this.reset()},
-  changeMood(event){if(this.data.isDrawing)return;this.setData({moodId:event.currentTarget.dataset.id});this.reset()},
   reset(){clearTimeout(this.drawTimer);this.setData({phase:"ready",choice:-1,result:{},isRevealed:false,isDrawing:false,isFavorite:false,selectedSign:getApp().getCardIdentity()})},
   shuffle(){
     if(this.data.isDrawing)return
@@ -34,7 +35,7 @@ Page({
   pick(event){
     if(this.data.phase!=="selecting" || this.data.isDrawing)return
     try{
-      const app=getApp(),result=this.data.mode==="daily"?app.drawToday():app.drawTheme(this.data.themeId,this.data.moodId)
+      const app=getApp(),result=this.data.mode==="daily"?app.drawToday():app.drawThemePlain(this.data.themeId)
       this.setData({result,selectedSign:result.sign,choice:Number(event.currentTarget.dataset.index),phase:"flipping",isDrawing:true,isFavorite:app.isFavorite(result.id)})
       if(!this.data.motion){this.setData({phase:"revealed",isRevealed:true,isDrawing:false});return}
       this.drawTimer=setTimeout(()=>{this.setData({phase:"revealed",isRevealed:true,isDrawing:false});wx.vibrateShort({type:"light",fail(){}})},560)

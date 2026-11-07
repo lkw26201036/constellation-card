@@ -9,7 +9,9 @@
     "pages/about/about",
     "pages/quiz/quiz",
     "pages/poster/poster",
-    "pages/research/research"
+    "pages/research/research",
+    "pages/spread/spread",
+    "pages/answer/answer"
   ],
   "window": {
     "navigationBarTitleText": "星座卡牌",

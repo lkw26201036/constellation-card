@@ -252,9 +252,9 @@ test('reduce motion persists and skips animation while daily quota remains uncha
 })
 test('home topic shortcut and result shortcut enter the requested draw mode', () => {
  const env=makeApp();let url
- const home=page('home',env.app,{...env.wx,switchTab:opts=>{url=opts.url}})
- home.onShow();home.openTheme({currentTarget:{dataset:{id:'work'}}});assert.equal(url,'/pages/draw/draw')
- const draw=page('draw',env.app);draw.onLoad();draw.onShow();assert.equal(draw.data.mode,'free');assert.equal(draw.data.themeId,'work');assert.equal(env.app.globalData.pendingTheme,null)
+ const home=page('home',env.app,{...env.wx,navigateTo:opts=>{url=opts.url},switchTab:opts=>{url=opts.url}})
+ home.onShow();home.openTheme({currentTarget:{dataset:{id:'work'}}});assert.equal(url,'/pages/spread/spread?topic=work')
+ env.app.globalData.pendingTheme='work';const draw=page('draw',env.app);draw.onLoad();draw.onShow();assert.equal(draw.data.mode,'free');assert.equal(draw.data.themeId,'work');assert.equal(env.app.globalData.pendingTheme,null)
  env.app.globalData.pendingTheme='relation';env.app.globalData.pendingDrawMode='daily';draw.onShow();assert.equal(draw.data.mode,'daily')
 })
 test('draft storage failure does not prevent the current quiz from continuing', () => {
@@ -380,5 +380,6 @@ test('preview switches guest and personal scenes without changing storage or lau
  guest.p.changePreviewMode({currentTarget:{dataset:{mode:"personal"}}});
  assert.ok(toast);assert.equal(guest.p.data.previewMode,"guest");assert.equal(guest.storage.selectedSign,undefined);guest.p.onUnload()
 })
+require('./ritual.cjs')({test,makeApp,page,query,fakeClock,project})
 console.log(passed+' checks passed')
 module.exports={passed}

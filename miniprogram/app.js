@@ -52,11 +52,13 @@ function validDate(value) {
 const explore = require("./services/explore")
 const research = require("./services/research")
 const preferences = require("./services/preferences")
+const ritual = require("./services/ritual")
 
 App({
   ...explore,
   ...research,
   ...preferences,
+  ...ritual,
   globalData: { selectedSign: null, launchAnimationSeen: false, zodiacSigns, oracleCards },
   onLaunch() {
     this.getSelectedSign()
@@ -158,15 +160,18 @@ App({
     return streak
   },
   getCardPath(card) {
+    if (card.type === "spread" || card.type === "book") return "/pages/detail/detail?v=" + card.contentVersion + "&type=" + card.type + "&sign=" + encodeURIComponent(card.sign) + "&date=" + card.date + "&source=" + card.sourceId + (card.type === "spread" ? "&topic=" + card.topic : "")
     const sourceId = card.sourceId || (card.id.match(/^oracle-\d+/) || [""])[0]
-    if (card.type === "theme" || card.type === "quiz") return "/pages/detail/detail?v=" + card.contentVersion + "&type=" + card.type + "&sign=" + encodeURIComponent(card.sign) + "&date=" + card.date + "&source=" + card.sourceId + (card.type === "theme" ? "&mood=" + card.mood : "")
+    if (card.type === "theme" || card.type === "quiz") return "/pages/detail/detail?v=" + card.contentVersion + "&type=" + card.type + "&sign=" + encodeURIComponent(card.sign) + "&date=" + card.date + "&source=" + card.sourceId + (card.type === "theme" && card.mood ? "&mood=" + card.mood : "")
     return "/pages/detail/detail?v=" + (card.contentVersion || "legacy") + "&type=" + card.type + "&sign=" + encodeURIComponent(card.sign) + "&date=" + card.date + (card.type === "oracle" ? "&source=" + sourceId : "")
   },
   resolveCard(query) {
     let sign
     try { sign = decodeURIComponent(query.sign || "") } catch (error) { return null }
     if (!this.isCardIdentity(sign) || !validDate(query.date)) return null
-    if (query.type === "theme") return query.v === "t1" ? this.buildTheme(query.source,sign,query.date,query.mood) : null
+    if (query.type === "spread") return query.v === "s1" ? this.buildSpread(String(query.source || "").split("."),sign,query.date,query.topic) : null
+    if (query.type === "book") return query.v === "b1" && /^(?:[1-9]\d?|1\d\d|200)$/.test(query.source || "") ? this.buildAnswer(Number(query.source),sign,query.date) : null
+    if (query.type === "theme") return query.v === "t2" ? this.buildThemePlain(query.source,sign,query.date) : query.v === "t1" ? this.buildTheme(query.source,sign,query.date,query.mood) : null
     if (query.type === "quiz") return query.v === "q1" ? this.buildQuiz(query.source,sign,query.date) : null
     if (query.type === "daily" && query.v === "u1") return sign === "通用" ? this.getDailyCard(sign, query.date) : null
     if (query.v !== "v1" && query.v !== "legacy") return null
