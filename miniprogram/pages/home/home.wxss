@@ -15,3 +15,4 @@
 .connection-entries button>text:last-child{align-self:flex-end;font-size:26rpx;opacity:.75}
 .connection-mark{font-family:serif;font-size:27rpx;color:#a38e61;min-width:0;text-align:left;line-height:1}
 .connection-entries button:first-child .connection-mark{color:#dac28f}
+.journey-entry{display:flex;align-items:center;gap:18rpx;margin:-8rpx 0 42rpx;padding:22rpx 20rpx;background:#e9e5d6;border:1rpx solid #c9ccb8;border-radius:var(--radius-md);color:var(--ink)}.journey-entry-symbol{font-size:29rpx;color:#9a875f}.journey-entry-main{flex:1;min-width:0}.journey-entry-title{font-family:serif;font-size:30rpx;line-height:1.45}.journey-entry-copy{font-size:22rpx;line-height:1.7;color:#687360;margin-top:4rpx}.journey-entry-arrow{font-size:27rpx;color:#687360}

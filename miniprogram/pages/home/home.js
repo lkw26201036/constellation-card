@@ -6,7 +6,7 @@ Page({
   refreshCard(){
     const app=getApp(),selectedSign=app.getSelectedSign(),signNames=["请选择星座",...app.globalData.zodiacSigns.map(item=>item.name)],card=app.getDailyCard()
     const signChosen=!!selectedSign
-    this.setData({selectedSign,selectedIndex:Math.max(0,signNames.indexOf(selectedSign)),signNames,card,dateLabel:card.dateLabel,isFavorite:app.isFavorite(card.id),glyph:getArt(selectedSign).symbol+"︎",signChosen,heroNote:signChosen?selectedSign+"的星光已经亮起。先收下一张卡，再决定今天要往哪里走。":"不需要先选星座，也可以先收下一张今日灵感卡。想探索关系时，再邀请一个人一起看。",quizDraft:app.getQuizDraft(),themes:app.getThemes(),lastAction:app.getLatestAction()})
+    this.setData({selectedSign,selectedIndex:Math.max(0,signNames.indexOf(selectedSign)),signNames,card,dateLabel:card.dateLabel,isFavorite:app.isFavorite(card.id),glyph:getArt(selectedSign).symbol+"︎",signChosen,heroNote:signChosen?selectedSign+"的星光已经亮起。先收下一张卡，再决定今天要往哪里走。":"不需要先选星座，也可以先收下一张今日灵感卡。想探索关系时，再邀请一个人一起看。",quizDraft:app.getQuizDraft(),themes:app.getThemes(),lastAction:app.getLatestAction(),journey:app.getJourneyView()})
   },
   actionChanged(event){this.setData({lastAction:event.detail.action})},
   chooseSign(event){
@@ -14,6 +14,7 @@ Page({
     try{getApp().setSelectedSign(this.data.signNames[index]);this.refreshCard();clearTimeout(this.animationTimer);if(!getApp().getPreferences().reducedMotion){this.setData({cardAnimating:true});this.animationTimer=setTimeout(()=>this.setData({cardAnimating:false}),180)}}catch(error){wx.showToast({title:"未能保存星座，请重试",icon:"none"})}
   },
   openQuiz(){wx.navigateTo({url:"/pages/quiz/quiz"})},
+  openJourney(){wx.navigateTo({url:"/pages/journey/journey"})},
   openDraw(){wx.switchTab({url:"/pages/draw/draw"})},
   openTheme(event){const id=event.currentTarget.dataset.id;if(!this.data.themes.some(item=>item.id===id))return;wx.navigateTo({url:"/pages/spread/spread?topic="+id})},
   openSpread(){wx.navigateTo({url:"/pages/spread/spread"})},

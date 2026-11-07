@@ -260,6 +260,18 @@ test('journey page keeps guest state and handles incomplete state without throwi
  const env=makeApp(),p=page('journey',env.app,{showToast(){}})
  p.onShow();assert.equal(p.data.journey.completed,false);p.actionChanged({detail:{action:null}});assert.equal(p.data.journey.started,false)
 })
+test('home surfaces the seven day journey entry and current progress',()=>{
+ const wxml=fs.readFileSync(path.join(project,'miniprogram/pages/home/home.wxml'),'utf8'),js=fs.readFileSync(path.join(project,'miniprogram/pages/home/home.js'),'utf8')
+ assert.match(wxml,/七日星光旅程/);assert.match(wxml,/journey\.currentDay/);assert.match(js,/getJourneyView/);assert.match(js,/openJourney/)
+})
+test('journey summary links restore across devices without private fields',()=>{
+ const app=makeApp().app,summary=app.getJourneySummary('2026-11-07','2026-11-13'),link=app.getCardPath(summary),query=Object.fromEntries(new URL(link,'https://test').searchParams),restarted=makeApp().app
+ assert.equal(query.v,'j1');assert.equal(query.start,'2026-11-07');assert.equal(JSON.stringify(restarted.resolveCard(query)),JSON.stringify(summary));assert.equal(link.includes('selectedSign'),false);assert.equal(link.includes('completedAt'),false)
+})
+test('journey summary poster uses existing bounded layout',()=>{
+ const poster=fs.readFileSync(path.join(project,'miniprogram/utils/poster.js'),'utf8'),pageWxml=fs.readFileSync(path.join(project,'miniprogram/pages/poster/poster.wxml'),'utf8')
+ assert.match(poster,/card\.type==="journey"/);assert.match(pageWxml,/七日星光总结/)
+})
 test('catalog keeps unique encountered themes after recent history pruning and restart', () => {
  const env=makeApp(),app=env.app
  for(const theme of app.getThemes()) for(let i=1;i<=8;i++)app.unlockTheme(app.buildTheme('theme-'+theme.id+'-'+String(i).padStart(2,'0'),'双鱼座','2026-11-07'))
