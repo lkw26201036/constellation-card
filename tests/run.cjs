@@ -380,6 +380,14 @@ test('preview switches guest and personal scenes without changing storage or lau
  guest.p.changePreviewMode({currentTarget:{dataset:{mode:"personal"}}});
  assert.ok(toast);assert.equal(guest.p.data.previewMode,"guest");assert.equal(guest.storage.selectedSign,undefined);guest.p.onUnload()
 })
+test('shared visual tokens define the approved constellation palette',()=>{
+ const css=fs.readFileSync(path.join(project,'miniprogram/app.wxss'),'utf8')
+ for(const token of ['--paper','--surface','--ink','--muted','--forest','--gold','--plum','--border','--radius-md','--motion-standard'])assert.match(css,new RegExp(token+'\\s*:'))
+ for(const file of ['miniprogram/pages/home/home.wxss','miniprogram/pages/dice/dice.wxss','miniprogram/pages/pair/pair.wxss']){
+  const pageCss=fs.readFileSync(path.join(project,file),'utf8')
+  assert.doesNotMatch(pageCss,/#(?:7c3aed|8b5cf6|a855f7)/i)
+ }
+})
 require('./ritual.cjs')({test,makeApp,page,query,fakeClock,project})
 require('./connection.cjs')({test,makeApp,page,query,fakeClock,project})
 console.log(passed+' checks passed')
