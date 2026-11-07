@@ -9,7 +9,7 @@ Page({
  onShow(){this.setData({reduced:getApp().getPreferences().reducedMotion});if(this.data.result)this.setData({isFavorite:getApp().isFavorite(this.data.result.id)})},
  onHide(){clearTimeout(this.timer);if(this.data.result)this.setData({phase:"revealed"})},
  onUnload(){this.alive=false;clearTimeout(this.timer)},
- roll(){if(this.data.phase==="rolling"||this.data.invalid)return;try{const card=getApp().rollDice(this.data.context);this.setData({result:card,face:card.face,phase:this.data.reduced?"revealed":"rolling",isFavorite:getApp().isFavorite(card.id),error:""});if(wx.pageScrollTo)wx.pageScrollTo({scrollTop:0,duration:0});if(!this.data.reduced)this.timer=setTimeout(()=>{if(this.alive)this.setData({phase:"revealed"})},1950)}catch(e){this.setData({error:"这次结果没有保存，请再试一次。"})}},
+ roll(){if(this.data.phase==="rolling"||this.data.invalid)return;try{if(this.data.result)getApp().track("dice_next_step","dice");const card=getApp().rollDice(this.data.context);this.setData({result:card,face:card.face,phase:this.data.reduced?"revealed":"rolling",isFavorite:getApp().isFavorite(card.id),error:""});if(wx.pageScrollTo)wx.pageScrollTo({scrollTop:0,duration:0});if(!this.data.reduced)this.timer=setTimeout(()=>{if(this.alive)this.setData({phase:"revealed"})},1950)}catch(e){this.setData({error:"这次结果没有保存，请再试一次。"})}},
  skip(){clearTimeout(this.timer);if(this.data.result)this.setData({phase:"revealed"})},
  save(){try{this.setData({isFavorite:getApp().toggleFavorite(this.data.result)});getApp().track("favorite_toggle","dice")}catch(e){this.setData({error:e.message||"收藏未保存，请重试"})}},
  poster(){wx.navigateTo({url:getApp().getCardPath(this.data.result).replace("/pages/detail/detail","/pages/poster/poster")})},
