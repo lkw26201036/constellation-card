@@ -55,6 +55,7 @@ const preferences = require("./services/preferences")
 const ritual = require("./services/ritual")
 const connection = require("./services/connection")
 const actions = require("./services/actions")
+const weekly = require("./services/weekly")
 
 App({
   ...explore,
@@ -63,6 +64,7 @@ App({
   ...ritual,
   ...connection,
   ...actions,
+  ...weekly,
   globalData: { selectedSign: null, launchAnimationSeen: false, zodiacSigns, oracleCards },
   onLaunch() {
     this.getSelectedSign()
