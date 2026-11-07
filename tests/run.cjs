@@ -466,6 +466,10 @@ test('weekly star review page is registered with theme and empty-state copy',()=
  const source=fs.readFileSync(path.join(project,'miniprogram/pages/weekly/weekly.js'),'utf8'),wxml=fs.readFileSync(path.join(project,'miniprogram/pages/weekly/weekly.wxml'),'utf8')
  assert.match(source,/getWeeklyReview/);assert.match(wxml,/本周星光/);assert.match(wxml,/还没有收下小行动/);assert.match(wxml,/本周主题/)
 })
+test('profile and collection surface the weekly review entry',()=>{
+ const profile=fs.readFileSync(path.join(project,'miniprogram/pages/profile/profile.wxml'),'utf8'),profileJs=fs.readFileSync(path.join(project,'miniprogram/pages/profile/profile.js'),'utf8'),collection=fs.readFileSync(path.join(project,'miniprogram/pages/collection/collection.wxml'),'utf8'),collectionJs=fs.readFileSync(path.join(project,'miniprogram/pages/collection/collection.js'),'utf8')
+ assert.match(profile,/本周星光/);assert.match(profileJs,/pages\/weekly\/weekly/);assert.match(collection,/本周星光/);assert.match(collectionJs,/pages\/weekly\/weekly/)
+})
 require('./ritual.cjs')({test,makeApp,page,query,fakeClock,project})
 require('./connection.cjs')({test,makeApp,page,query,fakeClock,project})
 console.log(passed+' checks passed')
