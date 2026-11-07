@@ -193,6 +193,23 @@ test('research counts next-day return on this device and keeps a bounded history
  assert.equal(env.app.getResearchRows().length,30)
  assert.equal(env.app.getResearchReport().scope,'current_device_only')
 })
+test('weekly research events stay aggregate and opt-in', () => {
+ const env=makeApp(),app=env.app
+ app.track('weekly_open','weekly')
+ assert.equal(app.getResearchRows().length,0)
+ app.setResearchEnabled(true)
+ app.track('weekly_open','weekly');app.track('weekly_pack_open','weekly');app.track('weekly_action_complete','weekly');app.track('weekly_feedback','weekly')
+ const report=app.getResearchReport()
+ assert.equal(report.counts['weekly_open:weekly'],1)
+ assert.equal(report.counts['weekly_pack_open:weekly'],1)
+ assert.equal(report.counts['weekly_action_complete:weekly'],1)
+ assert.equal(report.counts['weekly_feedback:weekly'],1)
+ assert.equal(JSON.stringify(report).includes('label'),false)
+})
+test('weekly page exposes lightweight feedback actions', () => {
+ const wxml=fs.readFileSync(path.join(project,'miniprogram/pages/weekly/weekly.wxml'),'utf8'),js=fs.readFileSync(path.join(project,'miniprogram/pages/weekly/weekly.js'),'utf8')
+ assert.match(wxml,/有帮助/);assert.match(wxml,/换个角度/);assert.match(js,/weekly_feedback/)
+})
 test('catalog keeps unique encountered themes after recent history pruning and restart', () => {
  const env=makeApp(),app=env.app
  for(const theme of app.getThemes()) for(let i=1;i<=8;i++)app.unlockTheme(app.buildTheme('theme-'+theme.id+'-'+String(i).padStart(2,'0'),'双鱼座','2026-11-07'))
