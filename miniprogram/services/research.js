@@ -1,5 +1,5 @@
-const allowed=["app_open","home_view","draw_complete","quiz_start","quiz_complete","share_intent","share_open","poster_generate","spread_start","spread_complete","book_open","favorite_toggle"]
-const sources=["daily","oracle","theme","quiz","home","app","spread","book"]
+const allowed=["app_open","home_view","draw_complete","quiz_start","quiz_complete","share_intent","share_open","poster_generate","spread_start","spread_complete","book_open","favorite_toggle","pair_start","pair_complete","dice_roll"]
+const sources=["daily","oracle","theme","quiz","home","app","spread","book","pair","dice"]
 module.exports={
   researchEnabled(){return wx.getStorageSync("researchEnabled")===true},
   setResearchEnabled(enabled){wx.setStorageSync("researchEnabled",enabled===true)},

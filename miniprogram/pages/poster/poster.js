@@ -17,5 +17,6 @@ Page({
   })
  },
  preview(){if(this.data.src)wx.previewImage({current:this.data.src,urls:[this.data.src]})},
+ sharePreview(){getApp().openSharePreview(this.data.card)},
  onShareAppMessage(){const card=this.data.card;return card?{title:(card.sign==="通用"?"十二星光":card.sign)+" · "+card.title,path:getApp().getSharePath(card)}:{title:"来抽一张属于你的卡",path:"/pages/home/home"}}
 })

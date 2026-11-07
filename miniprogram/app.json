@@ -11,7 +11,10 @@
     "pages/poster/poster",
     "pages/research/research",
     "pages/spread/spread",
-    "pages/answer/answer"
+    "pages/answer/answer",
+    "pages/pair/pair",
+    "pages/dice/dice",
+    "pages/share-preview/share-preview"
   ],
   "window": {
     "navigationBarTitleText": "星座卡牌",

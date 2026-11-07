@@ -1,6 +1,6 @@
 <view class="page-shell ritual-page {{reduced ? 'reduced' : ''}}">
  <view class="eyebrow">THE CONSTELLATION SPREAD · 星光牌阵</view>
- <view class="ritual-title">把问题留在心里</view><view class="ritual-subtitle">三张星光，三个看待此刻的角度</view>
+ <view class="spread-mode-row"><text>普通牌阵</text><button bindtap="openPair">双人星图 ↗</button></view><view class="ritual-title">把问题留在心里</view><view class="ritual-subtitle">三张星光，三个看待此刻的角度</view>
  <block wx:if="{{phase !== 'revealed'}}">
   <view class="ritual-stage {{phase}}">
    <view class="stage-ring"></view><view class="stage-orbit"></view><view class="stage-spark">✦</view>

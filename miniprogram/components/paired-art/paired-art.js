@@ -1,0 +1,2 @@
+const {getArt}=require("../../data/sign-art")
+Component({properties:{pair:{type:Object,value:null,observer(p){if(!p)return;this.setData({charts:[p.signA,p.signB].map((sign,index)=>{const a=getArt(sign),points=a.points.map(q=>({...q,x:q.x*.45,y:q.y*.5}));return{id:index,name:a.name,points,lines:a.edges.map(([from,to],id)=>{const x=points[from],y=points[to];return{id,x:x.x,y:x.y,length:Math.hypot(y.x-x.x,y.y-x.y),angle:Math.atan2(y.y-x.y,y.x-x.x)*180/Math.PI}})}})})}}},data:{charts:[]}})

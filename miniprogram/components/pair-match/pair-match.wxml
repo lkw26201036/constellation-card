@@ -1,0 +1,6 @@
+<view wx:if="{{pair && match}}" class="pair-match">
+ <view class="pair-eyebrow">{{match.relation}} · 双人星图</view><view class="pair-signs"><text>{{pair.signA}}</text><text class="pair-cross">✦</text><text>{{pair.signB}}</text></view>
+ <view wx:if="{{pair.aliasA || pair.aliasB}}" class="local-names">{{pair.aliasA || '我'}} 与 {{pair.aliasB || '对方'}} · 昵称仅在本机显示</view>
+ <view class="pair-summary">{{match.summary}}</view><view class="pair-lead">{{match.lead}}</view>
+ <block wx:if="{{!compact}}"><view wx:for="{{match.dimensions}}" wx:key="name" class="dimension"><view class="dimension-top"><text>{{item.name}}</text><text class="dimension-tag">{{item.tag}}</text></view><view class="dimension-text">{{item.text}}</view></view><view class="match-note">{{match.note}}</view></block>
+</view>

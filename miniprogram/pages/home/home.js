@@ -16,6 +16,8 @@ Page({
   openTheme(event){const id=event.currentTarget.dataset.id;if(!this.data.themes.some(item=>item.id===id))return;wx.navigateTo({url:"/pages/spread/spread?topic="+id})},
   openSpread(){wx.navigateTo({url:"/pages/spread/spread"})},
   openAnswer(){wx.navigateTo({url:"/pages/answer/answer"})},
+  openPair(){wx.navigateTo({url:"/pages/pair/pair"})},
+  openDice(){wx.navigateTo({url:"/pages/dice/dice"})},
   openDetail(){wx.navigateTo({url:getApp().getCardPath(this.data.card)})},
   saveCard(){try{const isFavorite=getApp().toggleFavorite(this.data.card);this.setData({isFavorite});wx.showToast({title:isFavorite?"已收藏":"已取消收藏",icon:"success"})}catch(error){wx.showToast({title:error.message||"保存失败，请重试",icon:"none"})}},
   onShareAppMessage(){return{title:(this.data.signChosen?this.data.selectedSign+"的今日卡":"今日灵感卡")+"｜"+this.data.card.title,path:getApp().getSharePath(this.data.card)}}

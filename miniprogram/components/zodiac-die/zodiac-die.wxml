@@ -1,0 +1,9 @@
+<view class="dice-theatre {{rolling ? 'rolling' : ''}} {{reduced ? 'reduced' : ''}}" aria-label="{{caption}}的星座骰子，{{value}}点">
+ <view class="dice-orbit orbit-one"></view><view class="dice-orbit orbit-two"></view><view class="orbit-mark">✦</view><view class="dice-shadow"></view><view class="landing-wave"></view>
+ <view class="dice-flight"><view class="cube" style="transform:rotateX({{rx}}deg) rotateY({{ry}}deg);--start-x:{{startX}}deg;--start-y:{{startY}}deg;--roll-x:{{rollX}}deg;--roll-y:{{rollY}}deg">
+  <view wx:for="{{faces}}" wx:key="number" class="die-face face-{{item.number}}" style="transform:{{item.transform}}">
+   <view class="face-frame"></view><view wx:for="{{charts}}" wx:for-item="chart" wx:key="id" class="face-chart"><view wx:for="{{chart.lines}}" wx:for-item="line" wx:key="id" class="face-line" style="left:{{line.x}}%;top:{{line.y}}%;width:{{line.length}}%;transform:rotate({{line.angle}}deg)"></view><text class="face-sign sign-{{index}}">{{chart.symbol}}</text></view>
+   <view wx:for="{{item.points}}" wx:for-item="point" wx:key="id" class="star-pip" style="left:{{point.x}}%;top:{{point.y}}%">✦</view><text class="face-name">{{item.name}}</text><view class="face-foil"></view>
+  </view>
+ </view></view><view class="dice-caption">{{caption}}</view>
+</view>

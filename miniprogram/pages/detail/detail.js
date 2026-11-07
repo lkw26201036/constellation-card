@@ -21,6 +21,8 @@ Page({
   secondaryAction() { if(this.data.shared)this.openPoster();else this.tryMine() },
   tryMine() {
     const app=getApp(),card=this.data.card
+    if(card&&card.type==="pair"){wx.navigateTo({url:"/pages/pair/pair"});return}
+    if(card&&card.type==="dice"){wx.navigateTo({url:card.pair?"/pages/pair/pair":"/pages/dice/dice"});return}
     if(card&&card.type==="spread"){wx.navigateTo({url:"/pages/spread/spread"});return}
     if(card&&card.type==="book"){wx.navigateTo({url:"/pages/answer/answer"});return}
     if(card&&card.type==="quiz"){wx.navigateTo({url:"/pages/quiz/quiz"});return}
@@ -31,5 +33,7 @@ Page({
   onShareAppMessage() {
     const card = this.data.card
     return card ? { title: (card.sign === "通用" ? "十二星光" : card.sign) + " · " + card.title, path: getApp().getSharePath(card) } : { title: "给今天一张温柔的卡", path: "/pages/home/home" }
-  }
+  },
+  sharePreview(){getApp().openSharePreview(this.data.card)},
+  openDice(){wx.navigateTo({url:getApp().getCardPath(this.data.card).replace("/pages/detail/detail","/pages/dice/dice")})}
 })

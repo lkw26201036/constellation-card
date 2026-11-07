@@ -381,5 +381,6 @@ test('preview switches guest and personal scenes without changing storage or lau
  assert.ok(toast);assert.equal(guest.p.data.previewMode,"guest");assert.equal(guest.storage.selectedSign,undefined);guest.p.onUnload()
 })
 require('./ritual.cjs')({test,makeApp,page,query,fakeClock,project})
+require('./connection.cjs')({test,makeApp,page,query,fakeClock,project})
 console.log(passed+' checks passed')
 module.exports={passed}

@@ -1,1 +1,1 @@
-{"component":true,"usingComponents":{"sign-art":"/components/sign-art/sign-art"}}
+{"component":true,"usingComponents":{"sign-art":"/components/sign-art/sign-art","pair-match":"/components/pair-match/pair-match","paired-art":"/components/paired-art/paired-art"}}

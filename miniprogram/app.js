@@ -53,12 +53,14 @@ const explore = require("./services/explore")
 const research = require("./services/research")
 const preferences = require("./services/preferences")
 const ritual = require("./services/ritual")
+const connection = require("./services/connection")
 
 App({
   ...explore,
   ...research,
   ...preferences,
   ...ritual,
+  ...connection,
   globalData: { selectedSign: null, launchAnimationSeen: false, zodiacSigns, oracleCards },
   onLaunch() {
     this.getSelectedSign()
@@ -160,6 +162,10 @@ App({
     return streak
   },
   getCardPath(card) {
+    if (card.type === "pair" || card.type === "dice") {
+      const p=card.pair
+      return "/pages/detail/detail?v="+card.contentVersion+"&type="+card.type+"&sign="+encodeURIComponent(card.sign)+"&date="+card.date+"&source="+card.sourceId+(p?"&other="+encodeURIComponent(p.signB)+"&relation="+p.relation:"")+(card.origin?"&origin="+card.origin+"&originDate="+card.originDate:"")
+    }
     if (card.type === "spread" || card.type === "book") return "/pages/detail/detail?v=" + card.contentVersion + "&type=" + card.type + "&sign=" + encodeURIComponent(card.sign) + "&date=" + card.date + "&source=" + card.sourceId + (card.type === "spread" ? "&topic=" + card.topic : "")
     const sourceId = card.sourceId || (card.id.match(/^oracle-\d+/) || [""])[0]
     if (card.type === "theme" || card.type === "quiz") return "/pages/detail/detail?v=" + card.contentVersion + "&type=" + card.type + "&sign=" + encodeURIComponent(card.sign) + "&date=" + card.date + "&source=" + card.sourceId + (card.type === "theme" && card.mood ? "&mood=" + card.mood : "")
@@ -169,6 +175,13 @@ App({
     let sign
     try { sign = decodeURIComponent(query.sign || "") } catch (error) { return null }
     if (!this.isCardIdentity(sign) || !validDate(query.date)) return null
+    if (query.type === "pair" || query.type === "dice") {
+      let other;try{other=decodeURIComponent(query.other||"")}catch(error){return null}
+      if((query.other||query.relation)&&(!this.isZodiac(other)||!query.relation))return null
+      const p=other?{signA:sign,signB:other,relation:query.relation}:null
+      if(query.type==="pair")return query.v==="p1"&&p?this.buildPair(String(query.source||"").split("."),p,query.date):null
+      return query.v==="d1"?this.buildDice(query.source,sign,query.date,p,query.origin||"",query.originDate||""):null
+    }
     if (query.type === "spread") return query.v === "s1" ? this.buildSpread(String(query.source || "").split("."),sign,query.date,query.topic) : null
     if (query.type === "book") return query.v === "b1" && /^(?:[1-9]\d?|1\d\d|200)$/.test(query.source || "") ? this.buildAnswer(Number(query.source),sign,query.date) : null
     if (query.type === "theme") return query.v === "t2" ? this.buildThemePlain(query.source,sign,query.date) : query.v === "t1" ? this.buildTheme(query.source,sign,query.date,query.mood) : null

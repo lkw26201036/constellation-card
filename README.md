@@ -1,6 +1,6 @@
 # 星座卡牌小程序
 
-当前版本 V0.7.0，原生微信小程序（JavaScript / WXML / WXSS），无npm依赖。微信开发者工具导入本仓库根目录即可运行。
+当前版本 V0.8.0，原生微信小程序（JavaScript / WXML / WXSS），无npm依赖。微信开发者工具导入本仓库根目录即可运行。
 
 ## 启动动效
 
@@ -35,6 +35,15 @@
 - 图像由scripts/generate-arcana-assets.cjs和data/arcana-art.js的60套原创矢量线描生成本地PNG，海报使用同源路径，无外部图片和字体请求。
 - 配置miniprogram/config/monetization.js默认关闭，仅预留未来广告位置；没有加载广告SDK。
 
+## V0.8 双人星图与吉运骰子
+
+- 双人星图：选择双方星座与心动探索/恋爱相处/朋友相处，七选三并揭晓“连接、差异、靠近”。结果用交流节奏、情绪回应、行动步调三个维度和一句关系总结，不显示百分比。
+- 双人星图动画从两束星光相遇开始；选填昵称与性别描述只在本机，不进入分享。
+- 吉运骰子：六面星座骰对应出发、松弛、表达、尝鲜、整理、温暖；单人60条建议、双人60条小约定，点数不分吉凶。
+- 骰面含星点和星图，投掷包含翻滚、弹跳、落地、点数亮起和结果渐显；支持跳过与减少动效。双人结果可从牌阵联动并回看。
+- 双人和骰子支持收藏、历史、海报、分享预览；接收分享不会覆盖自己的星座。
+- V0.8版本说明见 docs/V0.8-release.md。
+
 ## 数据与调研
 
 数据仅在本机，没有登录或云端同步。主签次数可受清理存储、改变设备日期影响；服务器校验尚未接入。
@@ -55,6 +64,6 @@ node tests/run.cjs
 
 回归包含跨天主签、主题卡无限抽取、旧数据、编码分享、测试计分与作答流程、卡册、默认关闭的本机记录和海报排版。微信真机分享、保存与反馈提交仍需验收。
 
-分阶段记录见 docs/V0.4-release.md、docs/V0.5-release.md、docs/V0.6-release.md 和 docs/V0.6.1-release.md 和 docs/V0.6.2-release.md；新版见 docs/V0.7-release.md。
+分阶段记录见 docs/V0.4-release.md、docs/V0.5-release.md、docs/V0.6-release.md 和 docs/V0.6.1-release.md 和 docs/V0.6.2-release.md；V0.7见 docs/V0.7-release.md，V0.8见 docs/V0.8-release.md。
 
 导航图标由 scripts/generate-tab-icons.cjs 的矢量线段生成，运行 node scripts/generate-tab-icons.cjs 可重建8张原生PNG资源，无外部图片或字体请求。广告和付费仍未接入。

@@ -42,5 +42,5 @@ module.exports = {
     this.track("quiz_complete","quiz")
     return card
   },
-  findLocalCard(id) { return [...this.getFavorites(),...this.getHistory(),...this.getQuizHistory(),...this.getThemeCatalog(),...this.getSpreadHistory(),...this.getAnswerHistory()].find(item=>item.id===id) || null }
+  findLocalCard(id) { return [...this.getFavorites(),...this.getHistory(),...this.getQuizHistory(),...this.getThemeCatalog(),...this.getSpreadHistory(),...this.getAnswerHistory(),...this.getPairHistory(),...this.getDiceHistory()].find(item=>item.id===id) || null }
 }

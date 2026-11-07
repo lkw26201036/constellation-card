@@ -19,6 +19,7 @@ Page({
   changeMode(event){
     if(event.currentTarget.dataset.mode==="spread"){wx.navigateTo({url:"/pages/spread/spread"});return}
     if(event.currentTarget.dataset.mode==="book"){wx.navigateTo({url:"/pages/answer/answer"});return}
+    if(event.currentTarget.dataset.mode==="dice"){wx.navigateTo({url:"/pages/dice/dice"});return}
     clearTimeout(this.drawTimer)
     this.setData({mode:event.currentTarget.dataset.mode})
     if(this.data.mode==="daily")this.refreshResult();else this.reset()

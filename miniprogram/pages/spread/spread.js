@@ -29,6 +29,7 @@ Page({
  toggleTopic(){if(!this.data.busy)this.setData({topicOpen:!this.data.topicOpen})},
  chooseTopic(event){if(this.data.busy)return;const topic=event.currentTarget.dataset.id;if(getApp().getSpreadTopics().some(t=>t.id===topic))this.setData({topic,topicOpen:false})},
  save(){try{this.setData({isFavorite:getApp().toggleFavorite(this.data.result)});getApp().track("favorite_toggle","spread")}catch(e){this.setData({error:e.message||"收藏未保存，请重试"})}},
+ openPair(){wx.navigateTo({url:"/pages/pair/pair"})},
  detail(){wx.navigateTo({url:getApp().getCardPath(this.data.result)})},
  poster(){wx.navigateTo({url:getApp().getCardPath(this.data.result).replace("/pages/detail/detail","/pages/poster/poster")})},
  replay(){if(this.data.result&&!this.data.busy&&!this.data.reduced){this.clearTimers();this.setData({phase:"revealing",busy:true},()=>this.toTop());this.later(()=>this.setData({phase:"revealed",busy:false}),1900)}},
