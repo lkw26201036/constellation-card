@@ -4,5 +4,5 @@
  <block wx:if="{{!record}}"><button class="action-followup-primary" bindtap="save">收下这一步 <text>→</text></button></block>
  <block wx:elif="{{record.status === 'saved'}}"><view class="action-followup-actions"><button bindtap="changeStatus" data-status="done">标记已完成</button><button bindtap="changeStatus" data-status="later">稍后再做</button></view></block>
  <block wx:elif="{{record.status === 'later'}}"><view class="action-followup-actions"><button bindtap="changeStatus" data-status="done">现在完成</button><button bindtap="changeStatus" data-status="saved">先收着</button></view></block>
- <block wx:else><view class="action-followup-done">这一步已经被你收下了 · <button bindtap="changeStatus" data-status="later">改为稍后再做</button></view></block>
+ <block wx:else><view class="action-followup-done">已完成于 {{record.completedLabel}} · <button bindtap="changeStatus" data-status="later">改为稍后再做</button></view></block>
 </view>

@@ -5,19 +5,21 @@ const responseOptions=[
 ]
 Page({
  data:{phase:"loading",pair:null,relationName:"",responseOptions,response:null,echoCard:null,error:""},
+ buildEchoCard(pair,response){return{id:"echo-e1-"+pair.id+"-"+response.id,type:"echo",contentVersion:"e1",sign:pair.sign,date:pair.date,dateLabel:pair.dateLabel,title:"你们的星光回响",keyword:response.title,text:response.text,advice:response.action,pair:{signA:pair.pair.signA,signB:pair.pair.signB,relation:pair.pair.relation},responseId:response.id}},
  onLoad(query){
   const app=getApp(),card=app.resolveCard(query||{})
   if(!card||card.type!=="pair"){this.setData({phase:"error",error:"这份星光回响链接暂时无法打开，请从双人星图重新进入。"});return}
   const relation=app.getRelations().find(item=>item.id===card.pair.relation)
-  this.setData({phase:"ready",pair:card,relationName:relation?relation.name:card.pair.relation})
+  const response=responseOptions.find(item=>item.id===query.response),echoCard=response?this.buildEchoCard(card,response):null
+  this.setData({phase:response?"revealed":"ready",pair:card,relationName:relation?relation.name:card.pair.relation,response:response||null,echoCard})
  },
  choose(event){
   if(this.data.phase!=="ready")return
   const response=this.data.responseOptions.find(item=>item.id===event.currentTarget.dataset.id)
   if(!response)return
-  const pair=this.data.pair,echoCard={id:"echo-e1-"+pair.id+"-"+response.id,type:"echo",contentVersion:"e1",sign:pair.sign,date:pair.date,dateLabel:pair.dateLabel,title:"你们的星光回响",keyword:response.title,text:response.text,advice:response.action,pair:{signA:pair.pair.signA,signB:pair.pair.signB,relation:pair.pair.relation},responseId:response.id}
+  const pair=this.data.pair,echoCard=this.buildEchoCard(pair,response)
   try{getApp().saveAction(echoCard);this.setData({response,echoCard,phase:"revealed"})}catch(error){this.setData({error:"回应没有保存，请再试一次。"})}
  },
  openPair(){wx.navigateTo({url:"/pages/pair/pair"})},
- onShareAppMessage(){return this.data.pair?{title:"给彼此留一张星光回响",path:getApp().getEchoPath(this.data.pair)}:{title:"来看看你们的星光回响",path:"/pages/pair/pair"}}
+ onShareAppMessage(){return this.data.pair?{title:this.data.response?"分享这张星光回应卡":"给彼此留一张星光回响",path:getApp().getEchoPath(this.data.pair,this.data.response&&this.data.response.id)}:{title:"来看看你们的星光回响",path:"/pages/pair/pair"}}
 })
