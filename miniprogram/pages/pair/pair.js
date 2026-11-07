@@ -24,6 +24,7 @@ Page({
  save(){try{this.setData({isFavorite:getApp().toggleFavorite(this.data.result)});getApp().track("favorite_toggle","pair")}catch(e){this.setData({error:e.message||"收藏未保存，请重试"})}},
  poster(){wx.navigateTo({url:getApp().getCardPath(this.data.result).replace("/pages/detail/detail","/pages/poster/poster")})},
  share(){getApp().openSharePreview(this.data.result)},
+ actionChanged(){},
  dice(){getApp().track("pair_next_step","pair");wx.navigateTo({url:"/pages/dice/dice?local="+encodeURIComponent(this.data.result.id)})},
  replay(){if(this.data.busy||this.data.reduced)return;this.setData({phase:"revealing",busy:true},()=>this.top());this.later(()=>this.setData({phase:"revealed",busy:false}),1900)},
  onShareAppMessage(){return this.data.result?{title:"你们的三束星光，会照向哪里？",path:getApp().getSharePath(this.data.result)}:{title:"选两颗星座，展开你们的星图",path:"/pages/pair/pair"}}

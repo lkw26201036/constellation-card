@@ -428,6 +428,15 @@ test('local action follow-up saves status transitions and survives restart',()=>
  assert.equal(restarted.getRecentActions().length,60)
  assert.throws(()=>app.setActionStatus(card.id,'bad'),/Invalid action status/)
 })
+test('home, dice and pair pages register the action follow-up component',()=>{
+ for(const name of ['home','dice','pair']){
+  const json=JSON.parse(fs.readFileSync(path.join(project,'miniprogram/pages',name,name+'.json'),'utf8'))
+  const wxml=fs.readFileSync(path.join(project,'miniprogram/pages',name,name+'.wxml'),'utf8')
+  assert.ok(json.usingComponents&&json.usingComponents['action-followup'])
+  assert.match(wxml,/action-followup/)
+ }
+ assert.match(fs.readFileSync(path.join(project,'miniprogram/pages/home/home.wxml'),'utf8'),/上次的小行动/)
+})
 require('./ritual.cjs')({test,makeApp,page,query,fakeClock,project})
 require('./connection.cjs')({test,makeApp,page,query,fakeClock,project})
 console.log(passed+' checks passed')
