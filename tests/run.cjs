@@ -437,6 +437,17 @@ test('home, dice and pair pages register the action follow-up component',()=>{
  }
  assert.match(fs.readFileSync(path.join(project,'miniprogram/pages/home/home.wxml'),'utf8'),/上次的小行动/)
 })
+test('star echo route preserves public pair context without private fields',()=>{
+ const config=JSON.parse(fs.readFileSync(path.join(project,'miniprogram/app.json'),'utf8'))
+ assert.ok(config.pages.includes('pages/echo/echo'))
+ const {app}=makeApp();const pair=app.buildPair(['a01','a02','a03'],{signA:'白羊座',signB:'双鱼座',relation:'friend'},'2026-11-07')
+ const echo=app.getEchoPath(pair),params=new URL(echo,'https://test').searchParams
+ assert.equal(params.get('type'),'pair');assert.equal(params.get('other'),'双鱼座');assert.equal(params.get('relation'),'friend')
+ assert.equal(params.get('aliasA'),null);assert.equal(params.get('aliasB'),null);assert.equal(params.get('gender'),null)
+ assert.equal(JSON.stringify(app.resolveCard(Object.fromEntries(params))),JSON.stringify(app.resolveCard(Object.fromEntries(new URL(app.getCardPath(pair),'https://test').searchParams))))
+ const source=fs.readFileSync(path.join(project,'miniprogram/pages/echo/echo.js'),'utf8')
+ assert.match(source,/responseOptions/);assert.match(source,/resonate/);assert.match(source,/begin/);assert.match(source,/light/)
+})
 require('./ritual.cjs')({test,makeApp,page,query,fakeClock,project})
 require('./connection.cjs')({test,makeApp,page,query,fakeClock,project})
 console.log(passed+' checks passed')

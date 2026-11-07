@@ -65,5 +65,6 @@ module.exports={
   if(card.type==="dice"){const p=card.pair;return this.buildDice(card.sourceId,card.sign,card.date,p?{signA:p.signA,signB:p.signB,relation:p.relation}:null,card.origin,card.originDate)}
   return card
  },
+ getEchoPath(card){return card&&card.type==="pair"?this.getCardPath(card).replace("/pages/detail/detail","/pages/echo/echo"):"/pages/echo/echo"},
  openSharePreview(card){wx.navigateTo({url:this.getCardPath(card).replace("/pages/detail/detail","/pages/share-preview/share-preview")})}
 }
