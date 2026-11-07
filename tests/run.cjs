@@ -210,6 +210,16 @@ test('weekly page exposes lightweight feedback actions', () => {
  const wxml=fs.readFileSync(path.join(project,'miniprogram/pages/weekly/weekly.wxml'),'utf8'),js=fs.readFileSync(path.join(project,'miniprogram/pages/weekly/weekly.js'),'utf8')
  assert.match(wxml,/有帮助/);assert.match(wxml,/换个角度/);assert.match(js,/weekly_feedback/);assert.match(js,/event\.detail\.action\.status===\"done\"/)
 })
+test('journey research events are opt in and aggregate only',()=>{
+ const env=makeApp(),app=env.app,names=['journey_start','journey_open','journey_day_complete','journey_resume','journey_complete','journey_summary_share']
+ names.forEach(name=>app.track(name,'journey'));assert.equal(app.getResearchRows().length,0)
+ app.setResearchEnabled(true);names.forEach(name=>app.track(name,'journey'))
+ const report=app.getResearchReport();names.forEach(name=>assert.equal(report.counts[name+':journey'],1));assert.equal(JSON.stringify(report).includes('journeyId'),false);assert.equal(JSON.stringify(report).includes('private'),false)
+})
+test('journey release labels stay current',()=>{
+ const read=file=>fs.readFileSync(path.join(project,file),'utf8')
+ assert.match(read('README.md'),/V1\.4/);assert.match(read('miniprogram/pages/about/about.wxml'),/V1\.4/);assert.match(read('miniprogram/pages/profile/profile.wxml'),/V1\.4/)
+})
 test('seven day journey starts with one unlocked action and stable state',()=>{
  const env=makeApp(),app=env.app
  assert.equal(app.getJourneyView('2026-11-07').started,false)
@@ -486,7 +496,7 @@ test('dice result leads with an actionable direction and astral stage accent',()
 test('functional arrows stay text presentation and release labels stay current',()=>{
  const files=['answer','collection','detail','dice','draw','home','pair','profile','share-preview','spread'].map(name=>path.join(project,'miniprogram/pages',name,name+'.wxml'))
  for(const file of files)assert.doesNotMatch(fs.readFileSync(file,'utf8'),/↗(?!\uFE0E)/)
- for(const file of ['miniprogram/pages/about/about.wxml','miniprogram/pages/profile/profile.wxml'])assert.match(fs.readFileSync(path.join(project,file),'utf8'),/V1\.3/)
+ for(const file of ['miniprogram/pages/about/about.wxml','miniprogram/pages/profile/profile.wxml'])assert.match(fs.readFileSync(path.join(project,file),'utf8'),/V1\.4/)
 })
 test('dice poster copy uses the current star dice name',()=>{
  const poster=fs.readFileSync(path.join(project,'miniprogram/utils/poster.js'),'utf8')

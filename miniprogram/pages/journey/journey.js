@@ -1,6 +1,6 @@
 Page({
  data:{journey:null},
- onShow(){this.refresh()},
+ onShow(){const app=getApp(),view=app.getJourneyView();this.setData({journey:view});if(view.started){app.track("journey_open","journey");if(!view.completed)app.track("journey_resume","journey")}},
  refresh(){this.setData({journey:getApp().getJourneyView()})},
  start(){const app=getApp();app.startJourney();app.track("journey_start","journey");this.refresh()},
  actionChanged(event){
@@ -8,9 +8,9 @@ Page({
   if(next&&action&&action.status==="done"&&next.completedDays>before.completedDays){app.track("journey_day_complete","journey");if(next.completed)app.track("journey_complete","journey")}
   this.setData({journey:next||app.getJourneyView()})
  },
- openSummary(){const summary=this.data.journey&&this.data.journey.summary;if(summary)wx.navigateTo({url: getApp().getCardPath(summary)})},
+ openSummary(){const summary=this.data.journey&&this.data.journey.summary;if(summary){getApp().track("journey_summary_share","journey");wx.navigateTo({url: getApp().getCardPath(summary)})}},
  openHome(){wx.switchTab({url:"/pages/home/home"})},
  openWeekly(){wx.navigateTo({url:"/pages/weekly/weekly"})},
  openDetail(){const card=this.data.journey&&this.data.journey.card;if(card)wx.navigateTo({url:getApp().getCardPath(card)})},
- onShareAppMessage(){const summary=this.data.journey&&this.data.journey.summary;return summary?{title:"我完成了七日星光旅程",path:getApp().getSharePath(summary)}:{title:"一起走七日星光旅程",path:"/pages/journey/journey"}}
+ onShareAppMessage(){const summary=this.data.journey&&this.data.journey.summary;if(summary)getApp().track("journey_summary_share","journey");return summary?{title:"我完成了七日星光旅程",path:getApp().getSharePath(summary)}:{title:"一起走七日星光旅程",path:"/pages/journey/journey"}}
 })

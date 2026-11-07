@@ -1,5 +1,5 @@
-const allowed=["app_open","home_view","draw_complete","quiz_start","quiz_complete","share_intent","share_open","poster_generate","spread_start","spread_complete","book_open","favorite_toggle","pair_start","pair_complete","pair_next_step","dice_roll","dice_next_step","weekly_open","weekly_pack_open","weekly_action_complete","weekly_feedback"]
-const sources=["daily","oracle","theme","quiz","home","app","spread","book","pair","dice","weekly"]
+const allowed=["app_open","home_view","draw_complete","quiz_start","quiz_complete","share_intent","share_open","poster_generate","spread_start","spread_complete","book_open","favorite_toggle","pair_start","pair_complete","pair_next_step","dice_roll","dice_next_step","weekly_open","weekly_pack_open","weekly_action_complete","weekly_feedback","journey_start","journey_open","journey_day_complete","journey_resume","journey_complete","journey_summary_share"]
+const sources=["daily","oracle","theme","quiz","home","app","spread","book","pair","dice","weekly","journey"]
 module.exports={
   researchEnabled(){return wx.getStorageSync("researchEnabled")===true},
   setResearchEnabled(enabled){wx.setStorageSync("researchEnabled",enabled===true)},
