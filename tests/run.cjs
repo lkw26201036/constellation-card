@@ -257,6 +257,16 @@ test('journey summary is deterministic and shareable without local state',()=>{
  const query={v:'j1',start:'2026-11-07',date:'2026-11-13'}
  assert.equal(JSON.stringify(restarted.app.getJourneyShareCard(query)),JSON.stringify(summary));assert.equal(JSON.stringify(query).includes('completedAt'),false)
 })
+test('journey summary keeps the actual delayed completion date',()=>{
+ const env=makeApp();env.storage.sevenDayJourney={version:'j1',journeyId:'journey-2026-11-07',startDate:'2026-11-07',days:Array.from({length:7},(_,index)=>({day:index+1,id:'journey-day-0'+(index+1),status:'done',completedAt:0})),lastProgressDate:'2026-11-20',completedAt:Date.parse('2026-11-20T12:00:00Z')}
+ assert.equal(env.app.getJourneyView('2026-11-20').summary.date,'2026-11-20')
+})
+test('journey keeps five completed summaries and independent round ids',()=>{
+ const env=makeApp(),app=env.app
+ for(let index=0;index<6;index++){const start='2026-10-0'+(index+1);app.startJourney(start);const state=env.storage.sevenDayJourney;state.days=state.days.map(item=>({...item,status:'done'}));state.completedAt=Date.parse(start+'T12:00:00Z');env.storage.sevenDayJourney=state}
+ app.startJourney('2026-11-01')
+ assert.equal(app.getJourneyHistory().length,5);assert.equal(new Set(app.getJourneyHistory().map(item=>item.journeyId)).size,5);assert.equal(app.getJourneyHistory()[0].type,'journey')
+})
 test('journey page is registered with action followup and progress copy',()=>{
  const config=JSON.parse(fs.readFileSync(path.join(project,'miniprogram/app.json'),'utf8')),wxml=fs.readFileSync(path.join(project,'miniprogram/pages/journey/journey.wxml'),'utf8'),json=JSON.parse(fs.readFileSync(path.join(project,'miniprogram/pages/journey/journey.json'),'utf8'))
  assert.ok(config.pages.includes('pages/journey/journey'));assert.match(wxml,/7 天/);assert.match(wxml,/action-followup/);assert.match(wxml,/开始七日旅程/);assert.match(wxml,/查看七日总结/);assert.equal(json.usingComponents['action-followup'],'/components/action-followup/action-followup')

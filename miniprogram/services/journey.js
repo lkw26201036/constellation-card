@@ -1,5 +1,5 @@
 const {days,summary}=require("../data/journey")
-const STORAGE_KEY="sevenDayJourney",VERSION="j1",STATUSES=["locked","available","saved","later","done"]
+const STORAGE_KEY="sevenDayJourney",HISTORY_KEY="journeyHistory",VERSION="j1",STATUSES=["locked","available","saved","later","done"]
 const pad=value=>String(value).padStart(2,"0")
 function validKey(value){return typeof value==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&Number.isFinite(Date.parse(value+"T00:00:00Z"))}
 function keyFrom(value){if(validKey(value))return value;const date=value instanceof Date?value:new Date(value||Date.now());return date.getFullYear()+"-"+pad(date.getMonth()+1)+"-"+pad(date.getDate())}
@@ -17,10 +17,11 @@ function cardFor(startDate,day,date,journeyId){
  return{id:(journeyId||"journey-"+startDate)+"-"+content.id,sourceId:content.id,type:"journey-day",contentVersion:VERSION,journeyId:journeyId||"journey-"+startDate,startDate,day,date,dateLabel:date,title:content.title,keyword:"七日星光",summary:content.text,text:content.text,advice:content.advice,sign:"通用"}
 }
 module.exports={
+ getJourneyHistory(){const raw=wx.getStorageSync(HISTORY_KEY);return(Array.isArray(raw)?raw:[]).filter(item=>item&&item.type==="journey"&&item.contentVersion===VERSION).slice(0,5)},
  getJourneyView(date){
   const state=normalize(wx.getStorageSync(STORAGE_KEY));if(!state)return emptyView()
   const today=keyFrom(date),elapsed=Math.max(0,diffDays(state.startDate,today)),scheduled=Math.min(days.length,elapsed+1),completedDays=state.days.filter(item=>item.status==="done").length
-  if(completedDays===days.length)return{started:true,completed:true,journeyId:state.journeyId,startDate:state.startDate,currentDay:days.length,completedDays,days:state.days.map(item=>({...item,title:days[item.day-1].title})),card:null,summary:this.getJourneySummary(state.startDate,addDays(state.startDate,days.length-1)),nextUnlockDate:""}
+  if(completedDays===days.length){const completedDate=state.completedAt?keyFrom(new Date(state.completedAt)):addDays(state.startDate,days.length-1);return{started:true,completed:true,journeyId:state.journeyId,startDate:state.startDate,currentDay:days.length,completedDays,days:state.days.map(item=>({...item,title:days[item.day-1].title})),card:null,summary:this.getJourneySummary(state.startDate,completedDate,state.journeyId),nextUnlockDate:""}}
   const pending=state.days.find(item=>item.status!=="done"),pendingDay=pending?pending.day:days.length
   const blockedByToday=state.lastProgressDate===today
   const canOpen=pendingDay<=scheduled&&!blockedByToday
@@ -30,7 +31,8 @@ module.exports={
  },
  startJourney(date){
   const existing=normalize(wx.getStorageSync(STORAGE_KEY));if(existing&&existing.completedAt===0)return existing
-  const startDate=keyFrom(date),state={version:VERSION,journeyId:"journey-"+startDate,startDate,days:days.map((item,index)=>({day:index+1,id:item.id,status:index===0?"available":"locked",completedAt:0})),lastProgressDate:"",completedAt:0}
+  if(existing&&existing.completedAt){const completedDate=keyFrom(new Date(existing.completedAt));const summaryCard=this.getJourneySummary(existing.startDate,completedDate,existing.journeyId);wx.setStorageSync(HISTORY_KEY,[summaryCard,...this.getJourneyHistory().filter(item=>item.id!==summaryCard.id)].slice(0,5))}
+  const startDate=keyFrom(date),sequence=Number(wx.getStorageSync("journeySequence"))||0,nextSequence=sequence+1;wx.setStorageSync("journeySequence",nextSequence);const journeyId=sequence===0&&!existing?"journey-"+startDate:"journey-"+startDate+"-"+nextSequence,state={version:VERSION,journeyId,startDate,days:days.map((item,index)=>({day:index+1,id:item.id,status:index===0?"available":"locked",completedAt:0})),lastProgressDate:"",completedAt:0}
   wx.setStorageSync(STORAGE_KEY,state);return state
  },
  syncJourneyAction(action){
@@ -47,12 +49,13 @@ module.exports={
   wx.setStorageSync(STORAGE_KEY,state);return this.getJourneyView(today)
  },
  getJourneyCard(startDate,day,date){return cardFor(startDate,day,keyFrom(date))},
- getJourneySummary(startDate,completedDate){
+ getJourneySummary(startDate,completedDate,journeyId){
   const start=keyFrom(startDate),completed=validKey(completedDate)?completedDate:addDays(start,days.length-1)
-  return{id:"journey-summary-"+start+"-"+completed,sourceId:"journey-"+start,type:"journey",contentVersion:VERSION,sign:"通用",date:completed,dateLabel:completed,title:summary.title,keyword:summary.keyword,summary:summary.text,text:summary.text,advice:summary.advice,journey:{startDate:start,completedDate:completed,days:days.length}}
+  const id=journeyId||"journey-"+start
+  return{id:"journey-summary-"+id+"-"+completed,sourceId:id,type:"journey",journeyId:id,contentVersion:VERSION,sign:"通用",date:completed,dateLabel:completed,title:summary.title,keyword:summary.keyword,summary:summary.text,text:summary.text,advice:summary.advice,journey:{journeyId:id,startDate:start,completedDate:completed,days:days.length}}
  },
  getJourneyShareCard(query){
   if(!query||query.v!==VERSION||typeof query.start!=="string"||!validKey(query.start)||!validKey(query.date))return null
-  return this.getJourneySummary(query.start,query.date)
+  return this.getJourneySummary(query.start,query.date,typeof query.journey==="string"&&query.journey?query.journey:undefined)
  }
 }

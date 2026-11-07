@@ -168,7 +168,7 @@ App({
     return streak
   },
   getCardPath(card) {
-    if (card.type === "journey") return "/pages/detail/detail?v=j1&type=journey&sign=通用&date=" + card.date + "&start=" + encodeURIComponent(card.journey && card.journey.startDate || card.date)
+    if (card.type === "journey") return "/pages/detail/detail?v=j1&type=journey&sign=通用&date=" + card.date + "&start=" + encodeURIComponent(card.journey && card.journey.startDate || card.date) + (card.journey && card.journey.journeyId ? "&journey=" + encodeURIComponent(card.journey.journeyId) : "")
     if (card.type === "pair" || card.type === "dice") {
       const p=card.pair
       return "/pages/detail/detail?v="+card.contentVersion+"&type="+card.type+"&sign="+encodeURIComponent(card.sign)+"&date="+card.date+"&source="+card.sourceId+(p?"&other="+encodeURIComponent(p.signB)+"&relation="+p.relation:"")+(card.origin?"&origin="+card.origin+"&originDate="+card.originDate:"")
