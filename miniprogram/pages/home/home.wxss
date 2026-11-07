@@ -5,8 +5,8 @@
 .connection-entries{margin:-18rpx 0 38rpx;border-top:1rpx solid #d1d8c5}.connection-entries button{display:flex;align-items:center;gap:23rpx;text-align:left;color:#3c563f;background:transparent;border-bottom:1rpx solid #d1d8c5;border-radius:0;padding:25rpx 0;margin:0}.connection-entries button>view{flex:1}.connection-entries button>view>view{font-family:serif;font-size:31rpx;letter-spacing:2rpx}.connection-entries button>view>text{font-size:22rpx;color:#748267}.connection-mark{font-family:serif;font-size:30rpx;color:#a38e61;min-width:66rpx;text-align:center}
 
 /* V0.8 layout refinement */
-.connection-entries{display:grid;grid-template-columns:1fr 1fr;gap:14rpx;margin:-18rpx 0 38rpx;border:0}
-.connection-entries button{min-width:0;min-height:188rpx;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:10rpx;text-align:left;color:#3c563f;border:1rpx solid #c7d0be;border-radius:16rpx;background:#e8ebdf;padding:22rpx 20rpx;margin:0}
+.connection-entries{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14rpx;width:100%;box-sizing:border-box;margin:-18rpx 0 38rpx;border:0}
+.connection-entries button{width:100%;min-width:0;min-height:188rpx;box-sizing:border-box;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:10rpx;text-align:left;color:#3c563f;border:1rpx solid #c7d0be;border-radius:16rpx;background:#e8ebdf;padding:22rpx 20rpx;margin:0;overflow:hidden}
 .connection-entries button:first-child{background:#244238;color:#f0e4c5;border-color:#55705a}
 .connection-entries button>view{width:100%;flex:1}
 .connection-entries button>view>view{font-family:serif;font-size:30rpx;letter-spacing:1rpx;line-height:1.4}
