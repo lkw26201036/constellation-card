@@ -475,6 +475,11 @@ test('pair setup prevents incomplete start with visible guidance',()=>{
  assert.match(xml,/disabled="\{\{!form\.signA \|\| !form\.signB \|\| !form\.relation\}\}"/)
  assert.match(xml,/请选择双方星座和关系类型后，再展开星图/)
 })
+test('weekly content packs provide three stable cards and pack progress',()=>{
+ const env=makeApp(),app=env.app,pack=app.getWeeklyPack('2026-11-07')
+ assert.equal(pack.cards.length,3);assert.ok(pack.theme.title);assert.equal(JSON.stringify(pack),JSON.stringify(app.getWeeklyPack('2026-11-08')));assert.notEqual(pack.theme.id,app.getWeeklyPack('2026-11-09').theme.id)
+ const card=pack.cards[0];app.saveAction(card);app.setActionStatus(card.id,'done');const review=app.getWeeklyReview('2026-11-07');assert.equal(review.packActionCount,1);assert.equal(review.packDoneCount,1)
+})
 require('./ritual.cjs')({test,makeApp,page,query,fakeClock,project})
 require('./connection.cjs')({test,makeApp,page,query,fakeClock,project})
 console.log(passed+' checks passed')
