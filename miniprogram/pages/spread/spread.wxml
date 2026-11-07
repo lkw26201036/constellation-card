@@ -1,6 +1,6 @@
 <view class="page-shell ritual-page {{reduced ? 'reduced' : ''}}">
  <view class="eyebrow">THE CONSTELLATION SPREAD · 星光牌阵</view>
- <view class="spread-mode-row"><text>普通牌阵</text><button bindtap="openPair">双人星图 ↗</button></view><view class="ritual-title">把问题留在心里</view><view class="ritual-subtitle">三张星光，三个看待此刻的角度</view>
+ <view class="spread-mode-row"><text>普通牌阵</text><button bindtap="openPair">双人星图 ↗︎</button></view><view class="ritual-title">把问题留在心里</view><view class="ritual-subtitle">三张星光，三个看待此刻的角度</view>
  <block wx:if="{{phase !== 'revealed'}}">
   <view class="ritual-stage {{phase}}">
    <view class="stage-ring"></view><view class="stage-orbit"></view><view class="stage-spark">✦</view>
@@ -12,11 +12,11 @@
   </view>
   <view wx:if="{{draft && phase !== 'revealing'}}" class="selection-slots"><view wx:for="{{slots}}" wx:key="index" class="selection-slot {{item.card ? 'filled' : ''}}" data-slot="{{index}}" bindtap="undo"><view wx:if="{{item.card}}" class="slot-back">✦</view><text class="slot-number">0{{index + 1}}</text><view>{{item.card ? '已选 · 点击撤回' : '等待你的选择'}}</view><text class="slot-role">{{item.role}}</text></view></view>
   <view class="ritual-caption">{{phase === 'ready' ? '无需说出问题，凭直觉选三张牌' : phase === 'dealing' ? '让星光慢慢铺开…' : phase === 'revealing' ? '让三个角度，依次来到你面前' : draft.selected.length + ' / 3 已选 · 揭晓前可点击撤回'}}</view>
-  <button style="width:100%" wx:if="{{phase === 'ready'}}" class="primary-button" bindtap="start">展开牌阵 <text>↗</text></button>
+  <button style="width:100%" wx:if="{{phase === 'ready'}}" class="primary-button" bindtap="start">展开牌阵 <text>↗︎</text></button>
   <button style="width:100%" wx:if="{{phase === 'selecting'}}" class="primary-button" disabled="{{draft.selected.length !== 3}}" bindtap="reveal">翻开星图 <text>✦</text></button>
   <button wx:if="{{phase === 'dealing' || phase === 'revealing'}}" class="quiet-action" bindtap="skip">跳过动画 {{phase === 'dealing' ? '· 继续选牌' : '· 查看结果'}}</button>
  </block>
- <block wx:else><view class="result-reveal"><reading-card card="{{result}}" show-advice="{{true}}"/></view><view class="result-actions"><button style="width:100%" class="primary-button" bindtap="poster">留成海报 ↗</button><button style="width:100%" class="ghost-button" bindtap="save">{{isFavorite ? '已收藏 · 取消' : '收藏整组'}}</button></view><view class="text-actions"><button open-type="share">分享这组星光</button><button wx:if="{{!reduced}}" bindtap="replay">重看揭晓</button></view><button style="width:100%" class="ghost-button" bindtap="start">重新展开 · 免费</button></block>
+ <block wx:else><view class="result-reveal"><reading-card card="{{result}}" show-advice="{{true}}"/></view><view class="result-actions"><button style="width:100%" class="primary-button" bindtap="poster">留成海报 ↗︎</button><button style="width:100%" class="ghost-button" bindtap="save">{{isFavorite ? '已收藏 · 取消' : '收藏整组'}}</button></view><view class="text-actions"><button open-type="share">分享这组星光</button><button wx:if="{{!reduced}}" bindtap="replay">重看揭晓</button></view><button style="width:100%" class="ghost-button" bindtap="start">重新展开 · 免费</button></block>
  <view wx:if="{{error}}" class="inline-error" role="alert">{{error}}</view>
  <view wx:if="{{phase === 'ready' || phase === 'revealed'}}" class="topic-control"><button class="quiet-action" bindtap="toggleTopic">下次想聊的话题 · {{topic === 'all' ? '随心' : topic === 'relation' ? '关系沟通' : topic === 'work' ? '学习工作' : '自我成长'}} ⌄</button><view wx:if="{{topicOpen}}" class="topic-list"><button wx:for="{{topics}}" wx:key="id" class="{{topic === item.id ? 'selected' : ''}}" data-id="{{item.id}}" bindtap="chooseTopic">{{item.name}}</button></view></view>
  <view class="ritual-footnote"><view>60张原创意象 · 七选三 · 近期牌面避重</view><view>轻占卜娱乐与自我探索，牌面不决定未来</view></view>
