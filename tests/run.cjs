@@ -210,6 +210,43 @@ test('weekly page exposes lightweight feedback actions', () => {
  const wxml=fs.readFileSync(path.join(project,'miniprogram/pages/weekly/weekly.wxml'),'utf8'),js=fs.readFileSync(path.join(project,'miniprogram/pages/weekly/weekly.js'),'utf8')
  assert.match(wxml,/有帮助/);assert.match(wxml,/换个角度/);assert.match(js,/weekly_feedback/);assert.match(js,/event\.detail\.action\.status===\"done\"/)
 })
+test('seven day journey starts with one unlocked action and stable state',()=>{
+ const env=makeApp(),app=env.app
+ assert.equal(app.getJourneyView('2026-11-07').started,false)
+ const started=app.startJourney('2026-11-07'),view=app.getJourneyView('2026-11-07')
+ assert.equal(started.journeyId,'journey-2026-11-07');assert.equal(view.started,true);assert.equal(view.days.length,7);assert.equal(view.currentDay,1);assert.ok(view.card);assert.equal(view.card.day,1)
+ assert.equal(view.days.filter(item=>item.status==='available').length,1)
+ assert.equal(view.card.id,app.getJourneyView('2026-11-07').card.id)
+ app.setSelectedSign('白羊座');assert.equal(app.getJourneyView('2026-11-07').card.id,view.card.id)
+})
+test('journey completion persists, advances once per date, and survives restart',()=>{
+ const env=makeApp(),app=env.app;app.startJourney('2026-11-07')
+ const card=app.getJourneyView('2026-11-07').card
+ const done=app.setActionStatus(app.saveAction(card).id,'done');app.syncJourneyAction(done)
+ assert.equal(app.getJourneyView('2026-11-07').completedDays,1);assert.equal(app.getJourneyView('2026-11-07').card,null)
+ const duplicate={...done,updatedAt:done.updatedAt+1};app.syncJourneyAction(duplicate);assert.equal(app.getJourneyView('2026-11-07').completedDays,1)
+ env.setDay(2026,11,8);assert.equal(app.getJourneyView().currentDay,2);assert.equal(app.getJourneyView().card.day,2)
+ const restarted=makeApp(env.storage);restarted.setDay(2026,11,8);assert.equal(restarted.app.getJourneyView().completedDays,1);assert.equal(restarted.app.getJourneyView().card.day,2)
+})
+test('journey missed days do not unlock multiple actions at once',()=>{
+ const env=makeApp(),app=env.app;app.startJourney('2026-11-07')
+ let done=app.setActionStatus(app.saveAction(app.getJourneyView().card).id,'done');app.syncJourneyAction(done)
+ env.setDay(2026,11,10);assert.equal(app.getJourneyView().card.day,2);assert.equal(app.getJourneyView().days.filter(item=>item.status==='available').length,1)
+ done=app.setActionStatus(app.saveAction(app.getJourneyView().card).id,'done');app.syncJourneyAction(done)
+ assert.equal(app.getJourneyView().card,null);assert.equal(app.getJourneyView().days.filter(item=>item.status==='available').length,0)
+ env.setDay(2026,11,11);assert.equal(app.getJourneyView().card.day,3)
+})
+test('journey rejects invalid storage and keeps unbound content stable',()=>{
+ const broken=makeApp({sevenDayJourney:{version:'bad',days:[]}});assert.equal(broken.app.getJourneyView('2026-11-07').started,false)
+ broken.app.startJourney('2026-11-07');const guest=broken.app.getJourneyView().days.map(item=>item.id+item.title)
+ broken.app.setSelectedSign('双鱼座');assert.deepEqual(broken.app.getJourneyView().days.map(item=>item.id+item.title),guest)
+})
+test('journey summary is deterministic and shareable without local state',()=>{
+ const env=makeApp(),app=env.app,summary=app.getJourneySummary('2026-11-07','2026-11-13'),restarted=makeApp()
+ assert.equal(summary.type,'journey');assert.equal(summary.contentVersion,'j1');assert.equal(summary.completedAt,undefined);assert.equal(summary.selectedSign,undefined)
+ const query={v:'j1',start:'2026-11-07',date:'2026-11-13'}
+ assert.equal(JSON.stringify(restarted.app.getJourneyShareCard(query)),JSON.stringify(summary));assert.equal(JSON.stringify(query).includes('completedAt'),false)
+})
 test('catalog keeps unique encountered themes after recent history pruning and restart', () => {
  const env=makeApp(),app=env.app
  for(const theme of app.getThemes()) for(let i=1;i<=8;i++)app.unlockTheme(app.buildTheme('theme-'+theme.id+'-'+String(i).padStart(2,'0'),'双鱼座','2026-11-07'))
