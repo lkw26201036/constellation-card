@@ -5,3 +5,4 @@
 .pair-page{background:linear-gradient(180deg,var(--paper) 0%,#eef0e7 58%,var(--paper) 100%)}.pair-page .pair-selectors{margin-top:28rpx}.pair-page .result-actions{gap:14rpx}.pair-page .result-actions button{width:auto!important;flex:1;min-width:0}.pair-page .pair-dice-button{box-shadow:0 10rpx 22rpx rgba(47,76,59,.14)}
 .next-step-note{margin:30rpx 0 2rpx;padding:18rpx 22rpx;border-left:2rpx solid var(--gold);background:rgba(229,232,220,.55);color:#53654f;font-size:24rpx;line-height:1.8}.next-step-note .section-index{margin-bottom:5rpx}
 .echo-button{margin-top:16rpx;color:#546b55;background:rgba(252,251,247,.7)}
+.setup-hint{margin:20rpx 0 10rpx;padding:14rpx 18rpx;background:#efe8db;border-left:2rpx solid #b5a179;color:#805f48;font-size:22rpx;line-height:1.7}.disabled-start{opacity:.55}

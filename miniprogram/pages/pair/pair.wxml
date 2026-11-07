@@ -5,7 +5,7 @@
   <view class="form-label">你想探索哪一种相处？</view><view class="relation-options"><button wx:for="{{relations}}" wx:key="id" class="{{form.relation === item.id ? 'selected' : ''}}" data-id="{{item.id}}" bindtap="chooseRelation">{{item.name}}</button></view>
   <button class="private-toggle" bindtap="togglePrivate">昵称与关系描述 · 选填 {{privateOpen ? '⌃' : '⌄'}}</button>
   <view wx:if="{{privateOpen}}" class="private-fields"><view class="private-hint">仅在本机使用，不影响契合提示，不进入分享链接。</view><view class="name-fields"><input value="{{form.aliasA}}" data-field="aliasA" bindinput="nickname" maxlength="24" placeholder="我的昵称（选填）"/><input value="{{form.aliasB}}" data-field="aliasB" bindinput="nickname" maxlength="24" placeholder="对方昵称（选填）"/></view><view class="gender-options"><button data-id="" class="{{!form.gender ? 'selected' : ''}}" bindtap="chooseGender">不填写</button><button data-id="same" class="{{form.gender === 'same' ? 'selected' : ''}}" bindtap="chooseGender">同性</button><button data-id="different" class="{{form.gender === 'different' ? 'selected' : ''}}" bindtap="chooseGender">异性</button></view></view>
-  <button style="width:100%" class="primary-button" bindtap="start">展开你们的星图 <text>↗︎</text></button>
+  <view wx:if="{{!form.signA || !form.signB || !form.relation}}" class="setup-hint">请选择双方星座和关系类型后，再展开星图</view><button style="width:100%" class="primary-button {{!form.signA || !form.signB || !form.relation ? 'disabled-start' : ''}}" disabled="{{!form.signA || !form.signB || !form.relation}}" bindtap="start">展开你们的星图 <text>↗︎</text></button>
   <button wx:if="{{last}}" class="quiet-action" bindtap="resume">回看上次的双人星图 →</button>
   <view class="form-note"><view>无需生日或私人问题。本次选择不改动个人绑定星座。</view><view>星座意象仅供娱乐，真实的理解来自你们的交流。</view></view>
  </block>

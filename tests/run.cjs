@@ -470,6 +470,11 @@ test('profile and collection surface the weekly review entry',()=>{
  const profile=fs.readFileSync(path.join(project,'miniprogram/pages/profile/profile.wxml'),'utf8'),profileJs=fs.readFileSync(path.join(project,'miniprogram/pages/profile/profile.js'),'utf8'),collection=fs.readFileSync(path.join(project,'miniprogram/pages/collection/collection.wxml'),'utf8'),collectionJs=fs.readFileSync(path.join(project,'miniprogram/pages/collection/collection.js'),'utf8')
  assert.match(profile,/本周星光/);assert.match(profileJs,/pages\/weekly\/weekly/);assert.match(collection,/本周星光/);assert.match(collectionJs,/pages\/weekly\/weekly/)
 })
+test('pair setup prevents incomplete start with visible guidance',()=>{
+ const xml=fs.readFileSync(path.join(project,'miniprogram/pages/pair/pair.wxml'),'utf8')
+ assert.match(xml,/disabled="\{\{!form\.signA \|\| !form\.signB \|\| !form\.relation\}\}"/)
+ assert.match(xml,/请选择双方星座和关系类型后，再展开星图/)
+})
 require('./ritual.cjs')({test,makeApp,page,query,fakeClock,project})
 require('./connection.cjs')({test,makeApp,page,query,fakeClock,project})
 console.log(passed+' checks passed')
