@@ -15,6 +15,7 @@
     "pages/pair/pair",
     "pages/dice/dice",
     "pages/echo/echo",
+    "pages/weekly/weekly",
     "pages/share-preview/share-preview"
   ],
   "window": {

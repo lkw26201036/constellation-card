@@ -460,6 +460,12 @@ test('weekly review stays stable by ISO week and counts local activity',()=>{
  const review=app.getWeeklyReview('2026-11-07');assert.equal(review.actionCount,1);assert.equal(review.doneCount,1);assert.equal(review.favoriteCount,1);assert.equal(review.recentActions[0].id,card.id)
  const empty=makeApp().app.getWeeklyReview('2026-11-07');assert.equal(empty.actionCount,0);assert.equal(empty.doneCount,0);assert.ok(empty.theme.title)
 })
+test('weekly star review page is registered with theme and empty-state copy',()=>{
+ const config=JSON.parse(fs.readFileSync(path.join(project,'miniprogram/app.json'),'utf8'))
+ assert.ok(config.pages.includes('pages/weekly/weekly'))
+ const source=fs.readFileSync(path.join(project,'miniprogram/pages/weekly/weekly.js'),'utf8'),wxml=fs.readFileSync(path.join(project,'miniprogram/pages/weekly/weekly.wxml'),'utf8')
+ assert.match(source,/getWeeklyReview/);assert.match(wxml,/本周星光/);assert.match(wxml,/还没有收下小行动/);assert.match(wxml,/本周主题/)
+})
 require('./ritual.cjs')({test,makeApp,page,query,fakeClock,project})
 require('./connection.cjs')({test,makeApp,page,query,fakeClock,project})
 console.log(passed+' checks passed')
