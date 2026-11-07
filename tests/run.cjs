@@ -397,6 +397,13 @@ test('home and draw pages distinguish daily card from main draw',()=>{
  assert.match(draw,/今日主签/)
  assert.match(drawCss,/mode-grid|mode-group/)
 })
+test('dice result leads with an actionable direction and astral stage accent',()=>{
+ const dice=fs.readFileSync(path.join(project,'miniprogram/pages/dice/dice.wxml'),'utf8')
+ const diceCss=fs.readFileSync(path.join(project,'miniprogram/pages/dice/dice.wxss'),'utf8')
+ assert.match(dice,/你摇到的是：/)
+ assert.match(dice,/星光骰子/)
+ assert.match(diceCss,/var\(--plum\)/)
+})
 require('./ritual.cjs')({test,makeApp,page,query,fakeClock,project})
 require('./connection.cjs')({test,makeApp,page,query,fakeClock,project})
 console.log(passed+' checks passed')

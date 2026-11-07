@@ -15,5 +15,5 @@ Page({
  poster(){wx.navigateTo({url:getApp().getCardPath(this.data.result).replace("/pages/detail/detail","/pages/poster/poster")})},
  share(){getApp().openSharePreview(this.data.result)},
  pair(){wx.navigateTo({url:"/pages/pair/pair"})},
- onShareAppMessage(){return this.data.result?{title:this.data.result.pair?"我摇到了这个小约定，要不要一起试试？":"摇出今天的小幸运",path:getApp().getSharePath(this.data.result)}:{title:"把一点好运，变成今天的小行动",path:"/pages/dice/dice"}}
+ onShareAppMessage(){return this.data.result?{title:this.data.result.pair?"我摇到了这个小约定，要不要一起试试？":"摇出今天的小方向",path:getApp().getSharePath(this.data.result)}:{title:"把一点星光，变成今天的小行动",path:"/pages/dice/dice"}}
 })
