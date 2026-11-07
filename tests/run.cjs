@@ -424,7 +424,7 @@ test('dice result leads with an actionable direction and astral stage accent',()
 test('functional arrows stay text presentation and release labels stay current',()=>{
  const files=['answer','collection','detail','dice','draw','home','pair','profile','share-preview','spread'].map(name=>path.join(project,'miniprogram/pages',name,name+'.wxml'))
  for(const file of files)assert.doesNotMatch(fs.readFileSync(file,'utf8'),/↗(?!\uFE0E)/)
- for(const file of ['miniprogram/pages/about/about.wxml','miniprogram/pages/profile/profile.wxml'])assert.match(fs.readFileSync(path.join(project,file),'utf8'),/V1\.2/)
+ for(const file of ['miniprogram/pages/about/about.wxml','miniprogram/pages/profile/profile.wxml'])assert.match(fs.readFileSync(path.join(project,file),'utf8'),/V1\.3/)
 })
 test('dice poster copy uses the current star dice name',()=>{
  const poster=fs.readFileSync(path.join(project,'miniprogram/utils/poster.js'),'utf8')
